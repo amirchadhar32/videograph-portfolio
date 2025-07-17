@@ -625,6 +625,11 @@ ol {
   padding: 0px 50px;
 }
 
+.mission {
+  background: #1a083d;
+  color:  white;
+}
+
 .counter__item {
   background: #1a083d;
   -webkit-transform: rotate(45deg);

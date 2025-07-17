@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="103" height="103" viewBox="0 0 103 103">
+  <defs>
+    <filter id="Ellipse_109" x="0" y="0" width="103" height="103" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_8417" data-name="Group 8417" transform="translate(-384 -2761)">
+    <g transform="matrix(1, 0, 0, 1, 384, 2761)" filter="url(#Ellipse_109)">
+      <circle id="Ellipse_109-2" data-name="Ellipse 109" cx="42.5" cy="42.5" r="42.5" transform="translate(9 6)" fill="#fff"/>
+    </g>
+    <g id="html-svgrepo-com" transform="translate(411.693 2786.646)">
+      <path id="Path_9510" data-name="Path 9510" d="M7.323,43.138,3.655,2h40.3L40.286,43.131l-16.5,4.576Z" fill="#e44f26"/>
+      <path id="Path_9511" data-name="Path 9511" d="M16,42.907l13.337-3.7L32.474,4.061H16Z" transform="translate(7.807 1.303)" fill="#f1662a"/>
+      <path id="Path_9512" data-name="Path 9512" d="M20.9,17.363H14.225l-.46-5.166H20.9V7.151H8.25l.121,1.355,1.239,13.9H20.9Z" transform="translate(2.906 3.257)" fill="#ebebeb"/>
+      <path id="Path_9513" data-name="Path 9513" d="M20.287,23.578l-.023.007-5.619-1.516-.359-4.024H9.221l.707,7.92,10.336,2.87.023-.007Z" transform="translate(3.52 10.146)" fill="#ebebeb"/>
+      <path id="Path_9514" data-name="Path 9514" d="M15.989,13.407v5.046H22.2L21.617,25l-5.628,1.518v5.25L26.333,28.9l.075-.852,1.185-13.283.124-1.355H15.989Z" transform="translate(7.8 7.214)" fill="#fff"/>
+      <path id="Path_9515" data-name="Path 9515" d="M15.989,7.151V12.2H28.176l.1-1.133.23-2.558.121-1.355Z" transform="translate(7.8 3.257)" fill="#fff"/>
+    </g>
+  </g>
+</svg>
