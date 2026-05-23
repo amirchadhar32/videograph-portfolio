@@ -153,10 +153,12 @@ if (contactForm) {
       <span>Sending...</span>`;
     btn.disabled = true;
 
-    fetch('/', {
+    const payload = new URLSearchParams(new FormData(contactForm)).toString();
+
+    fetch(contactForm.getAttribute('action') || '/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(new FormData(contactForm)).toString(),
+      body: payload,
     })
       .then((res) => {
         if (!res.ok) throw new Error('Submit failed');

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Form detection</title>
+</head>
+<body>
+  <!-- Netlify scans this file at deploy to register the contact form -->
+  <form name="contact" method="POST" data-netlify="true" netlify netlify-honeypot="bot-field">
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <select name="project-type">
+      <option value="">Select a service...</option>
+      <option>Web Application</option>
+      <option>CRM / Business System</option>
+      <option>E-Commerce Platform</option>
+      <option>API Development</option>
+      <option>WordPress / CMS</option>
+      <option>UI/UX to Code</option>
+      <option>Other</option>
+    </select>
+    <textarea name="message"></textarea>
+    <input name="bot-field" />
+  </form>
+</body>
+</html>
