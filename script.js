@@ -219,7 +219,13 @@ async function submitContactForm(form, btn) {
   });
 
   const text = await res.text();
-  const accepted = res.ok && text.includes('form-success');
+  const accepted =
+    res.ok &&
+    (
+      text.includes('form-success') ||
+      text.includes('Your form submission has been received') ||
+      (text.includes('Thank you') && text.includes('form submission'))
+    );
 
   if (!accepted) throw new Error('Netlify did not accept this submission');
 
