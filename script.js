@@ -137,7 +137,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-/* ---- reCAPTCHA v3 (invisible) ---- */
+/* ---- reCAPTCHA v3 (optional — never blocks Netlify submit) ---- */
 (function initRecaptchaV3() {
   const siteKey = window.RECAPTCHA_SITE_KEY && String(window.RECAPTCHA_SITE_KEY).trim();
   const wrap = document.getElementById('recaptchaWrap');
@@ -153,26 +153,65 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 function getRecaptchaV3Token() {
   const siteKey = window.RECAPTCHA_SITE_KEY && String(window.RECAPTCHA_SITE_KEY).trim();
-  if (!siteKey) return Promise.resolve('');
+  if (!siteKey) return Promise.resolve(null);
 
   const action = window.RECAPTCHA_ACTION || 'contact_submit';
+  const timeoutMs = 8000;
 
-  return new Promise((resolve, reject) => {
-    if (!window.grecaptcha) {
-      reject(new Error('reCAPTCHA not loaded'));
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = (token) => {
+      if (settled) return;
+      settled = true;
+      resolve(token || null);
+    };
+
+    const timer = setTimeout(() => done(null), timeoutMs);
+
+    const runExecute = () => {
+      window.grecaptcha.ready(() => {
+        window.grecaptcha
+          .execute(siteKey, { action })
+          .then((token) => {
+            clearTimeout(timer);
+            done(token);
+          })
+          .catch(() => {
+            clearTimeout(timer);
+            done(null);
+          });
+      });
+    };
+
+    if (window.grecaptcha) {
+      runExecute();
       return;
     }
-    window.grecaptcha.ready(() => {
-      window.grecaptcha
-        .execute(siteKey, { action })
-        .then(resolve)
-        .catch(reject);
-    });
+
+    let waited = 0;
+    const waitForScript = setInterval(() => {
+      waited += 100;
+      if (window.grecaptcha) {
+        clearInterval(waitForScript);
+        runExecute();
+      } else if (waited >= timeoutMs) {
+        clearInterval(waitForScript);
+        clearTimeout(timer);
+        done(null);
+      }
+    }, 100);
   });
 }
 
+function buildContactFormPayload(form) {
+  const data = new FormData(form);
+  const token = data.get('g-recaptcha-response');
+  if (!token) data.delete('g-recaptcha-response');
+  return new URLSearchParams(data).toString();
+}
+
 function submitContactForm(form, btn, originalHTML) {
-  const payload = new URLSearchParams(new FormData(form)).toString();
+  const payload = buildContactFormPayload(form);
 
   return fetch(form.getAttribute('action') || '/', {
     method: 'POST',
@@ -212,7 +251,11 @@ if (contactForm) {
 
     getRecaptchaV3Token()
       .then((token) => {
-        if (tokenField) tokenField.value = token;
+        if (tokenField) tokenField.value = token || '';
+        return submitContactForm(form, btn, originalHTML);
+      })
+      .catch(() => {
+        if (tokenField) tokenField.value = '';
         return submitContactForm(form, btn, originalHTML);
       })
       .catch(() => {
