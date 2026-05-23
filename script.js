@@ -220,10 +220,32 @@ function buildContactPayload(form) {
 }
 
 function isNetlifyFormSuccess(html) {
+  const body = String(html).toLowerCase();
   return (
-    html.includes('Your form submission has been received') ||
-    html.includes('form-success')
+    body.includes('your form submission has been received') ||
+    body.includes('form-success')
   );
+}
+
+function setFormStatus(type, message) {
+  const el = document.getElementById('formStatus');
+  if (!el) return;
+
+  el.hidden = false;
+  el.className = 'form-status';
+  el.textContent = message;
+
+  if (type === 'success') el.classList.add('is-success');
+  else if (type === 'error') el.classList.add('is-error');
+  else el.classList.add('is-info');
+}
+
+function clearFormStatus() {
+  const el = document.getElementById('formStatus');
+  if (!el) return;
+  el.hidden = true;
+  el.textContent = '';
+  el.className = 'form-status';
 }
 
 async function postContactToNetlify(form) {
@@ -234,12 +256,12 @@ async function postContactToNetlify(form) {
   });
 
   const text = await res.text();
-  if (!isNetlifyFormSuccess(text)) {
-    throw new Error('netlify');
-  }
+  const saved = res.ok && isNetlifyFormSuccess(text);
+
+  return { saved, status: res.status };
 }
 
-/* ---- CONTACT FORM: reCAPTCHA → Netlify → success on same page ---- */
+/* ---- CONTACT FORM: reCAPTCHA → Netlify → message from real response ---- */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', async function(e) {
@@ -250,50 +272,65 @@ if (contactForm) {
     const form = this;
     const siteKey = window.RECAPTCHA_SITE_KEY && String(window.RECAPTCHA_SITE_KEY).trim();
 
+    clearFormStatus();
+    btn.disabled = true;
     btn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
         <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
       </svg>
-      <span>${siteKey ? 'Verifying...' : 'Sending...'}</span>`;
-    btn.disabled = true;
+      <span>Please wait...</span>`;
 
     try {
       if (siteKey) {
+        setFormStatus('info', 'Step 1/2: Verifying reCAPTCHA...');
         const token = await getRecaptchaV3Token();
-        if (!token) throw new Error('recaptcha');
-        btn.innerHTML = `
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
-            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-          </svg>
-          <span>Sending...</span>`;
+        if (!token) {
+          setFormStatus('error', 'reCAPTCHA verification failed. Refresh the page and try again.');
+          throw new Error('recaptcha');
+        }
       }
 
-      await postContactToNetlify(form);
+      setFormStatus('info', siteKey ? 'Step 2/2: Sending to Netlify...' : 'Sending your message...');
 
-      btn.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        <span>Message Sent!</span>`;
-      btn.style.background = '#22c55e';
-      form.reset();
+      const { saved, status } = await postContactToNetlify(form);
+
+      if (saved) {
+        setFormStatus('success', 'Success! Your message was saved. We will get back to you soon.');
+        btn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Message Sent!</span>`;
+        btn.style.background = '#22c55e';
+        form.reset();
+      } else {
+        setFormStatus(
+          'error',
+          `Failed to save (server responded ${status}). Please try again in a moment.`
+        );
+        throw new Error('netlify');
+      }
     } catch (err) {
-      const msg =
-        err && err.message === 'recaptcha'
-          ? 'reCAPTCHA failed — refresh & try'
-          : 'Failed — try again';
-      btn.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-        </svg>
-        <span>${msg}</span>`;
-      btn.style.background = '#ef4444';
+      if (err && err.message === 'spam') {
+        setFormStatus('error', 'Submission blocked. Please try again.');
+      } else if (err && err.message !== 'recaptcha' && err.message !== 'netlify') {
+        setFormStatus('error', 'Network error. Check your connection and try again.');
+      }
+
+      if (!btn.style.background || btn.style.background === '') {
+        btn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          <span>Failed — try again</span>`;
+        btn.style.background = '#ef4444';
+      }
     } finally {
       setTimeout(() => {
         btn.innerHTML = originalHTML;
         btn.style.background = '';
         btn.disabled = false;
-      }, 3500);
+      }, 4000);
     }
   });
 }
