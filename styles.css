@@ -536,7 +536,7 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
 /* ============================================
    SERVICES
 ============================================ */
-.services { padding: 130px 0; background: var(--bg); position: relative; z-index: 1; }
+.services { padding: 130px 0; background: var(--bg); position: relative; }
 
 .services-grid {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 1px;
@@ -596,7 +596,7 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
    WORK
 ============================================ */
 .work {
-  padding: 130px 0; background: var(--bg-2); position: relative; z-index: 1;
+  padding: 130px 0; background: var(--bg-2); position: relative;
 }
 .work::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -656,7 +656,7 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
 /* ============================================
    ABOUT
 ============================================ */
-.about { padding: 130px 0; background: var(--bg); position: relative; overflow: hidden; z-index: 1; }
+.about { padding: 130px 0; background: var(--bg); position: relative; overflow: hidden;}
 .about-bg-word {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%,-50%);
@@ -750,7 +750,7 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
 /* ============================================
    PROCESS
 ============================================ */
-.process { padding: 130px 0; background: var(--bg-2); position: relative; z-index: 1; }
+.process { padding: 130px 0; background: var(--bg-2); position: relative; }
 .process::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(to right, transparent, var(--border), transparent);
@@ -778,7 +778,7 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
 /* ============================================
    CONTACT
 ============================================ */
-.contact { padding: 130px 0; background: var(--bg); position: relative; overflow: hidden; z-index: 1; }
+.contact { padding: 130px 0; background: var(--bg); position: relative; overflow: hidden;  }
 .contact::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(to right, transparent, var(--orange), transparent);
