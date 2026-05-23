@@ -10,6 +10,6 @@
  *
  * Leave empty ('') to disable reCAPTCHA and submit like a normal Netlify form.
  */
-// 6Ld5wfgsAAAAAJO4boml-dJjesZIhpdhGcqXDTeT
-window.RECAPTCHA_SITE_KEY = '';
+// 
+window.RECAPTCHA_SITE_KEY = '6Ld5wfgsAAAAAJO4boml-dJjesZIhpdhGcqXDTeT';
 window.RECAPTCHA_ACTION = 'contact_submit';
