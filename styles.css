@@ -838,9 +838,6 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
   flex-direction: column;
   gap: 10px;
 }
-.fg-recaptcha [data-netlify-recaptcha="true"] {
-  min-height: 78px;
-}
 .recaptcha-notice {
   font-size: 11px;
   line-height: 1.5;

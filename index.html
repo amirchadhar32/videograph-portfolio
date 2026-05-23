@@ -9,11 +9,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="recaptcha-config.js"></script>
 </head>
 <body>
 
   <!-- Netlify form registration (parsed at deploy; not shown on page) -->
-  <form name="contact" method="POST" data-netlify="true" data-netlify-recaptcha="true" netlify netlify-honeypot="bot-field" hidden>
+  <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
     <input type="text" name="name" />
     <input type="email" name="email" />
     <select name="project-type">
@@ -27,7 +28,6 @@
       <option>Other</option>
     </select>
     <textarea name="message"></textarea>
-    <div data-netlify-recaptcha="true"></div>
     <input name="bot-field" />
   </form>
 
@@ -598,12 +598,12 @@
               method="POST"
               action="/"
               data-netlify="true"
-              data-netlify-recaptcha="true"
               netlify
               netlify-honeypot="bot-field"
               id="contactForm"
             >
               <input type="hidden" name="form-name" value="contact" />
+              <input type="hidden" name="g-recaptcha-response" value="" />
               <p class="hp-field" aria-hidden="true">
                 <label>Don’t fill this out: <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
               </p>
@@ -634,8 +634,7 @@
                 <label for="contact-message">Tell Us About Your Project</label>
                 <textarea id="contact-message" name="message" rows="5" placeholder="Describe your project, goals, and timeline..." required></textarea>
               </div>
-              <div class="fg-recaptcha">
-                <div data-netlify-recaptcha="true"></div>
+              <div class="fg-recaptcha" id="recaptchaWrap" hidden>
                 <p class="recaptcha-notice">
                   This site is protected by reCAPTCHA and the Google
                   <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>

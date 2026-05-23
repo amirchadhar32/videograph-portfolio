@@ -137,7 +137,62 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-/* ---- CONTACT FORM (Netlify Forms + reCAPTCHA) ---- */
+/* ---- reCAPTCHA v3 (invisible) ---- */
+(function initRecaptchaV3() {
+  const siteKey = window.RECAPTCHA_SITE_KEY && String(window.RECAPTCHA_SITE_KEY).trim();
+  const wrap = document.getElementById('recaptchaWrap');
+  if (!siteKey) return;
+
+  if (wrap) wrap.hidden = false;
+
+  const script = document.createElement('script');
+  script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
+  script.async = true;
+  document.head.appendChild(script);
+})();
+
+function getRecaptchaV3Token() {
+  const siteKey = window.RECAPTCHA_SITE_KEY && String(window.RECAPTCHA_SITE_KEY).trim();
+  if (!siteKey) return Promise.resolve('');
+
+  const action = window.RECAPTCHA_ACTION || 'contact_submit';
+
+  return new Promise((resolve, reject) => {
+    if (!window.grecaptcha) {
+      reject(new Error('reCAPTCHA not loaded'));
+      return;
+    }
+    window.grecaptcha.ready(() => {
+      window.grecaptcha
+        .execute(siteKey, { action })
+        .then(resolve)
+        .catch(reject);
+    });
+  });
+}
+
+function submitContactForm(form, btn, originalHTML) {
+  const payload = new URLSearchParams(new FormData(form)).toString();
+
+  return fetch(form.getAttribute('action') || '/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: payload,
+  }).then((res) => {
+    if (!res.ok) throw new Error('Submit failed');
+    btn.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>Message Sent!</span>`;
+    btn.style.background = '#22c55e';
+    form.reset();
+    const tokenField = form.querySelector('[name="g-recaptcha-response"]');
+    if (tokenField) tokenField.value = '';
+  });
+}
+
+/* ---- CONTACT FORM (Netlify Forms + reCAPTCHA v3) ---- */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', function(e) {
@@ -145,17 +200,8 @@ if (contactForm) {
 
     const btn = this.querySelector('button[type="submit"]');
     const originalHTML = btn.innerHTML;
-    const recaptchaField = this.querySelector('[name="g-recaptcha-response"]');
-
-    if (recaptchaField && !recaptchaField.value) {
-      btn.innerHTML = '<span>Complete the reCAPTCHA first</span>';
-      btn.style.background = '#f59e0b';
-      setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.style.background = '';
-      }, 2500);
-      return;
-    }
+    const form = this;
+    const tokenField = form.querySelector('[name="g-recaptcha-response"]');
 
     btn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
@@ -164,23 +210,10 @@ if (contactForm) {
       <span>Sending...</span>`;
     btn.disabled = true;
 
-    const payload = new URLSearchParams(new FormData(contactForm)).toString();
-
-    fetch(contactForm.getAttribute('action') || '/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: payload,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Submit failed');
-        btn.innerHTML = `
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <span>Message Sent!</span>`;
-        btn.style.background = '#22c55e';
-        contactForm.reset();
-        if (window.grecaptcha) window.grecaptcha.reset();
+    getRecaptchaV3Token()
+      .then((token) => {
+        if (tokenField) tokenField.value = token;
+        return submitContactForm(form, btn, originalHTML);
       })
       .catch(() => {
         btn.innerHTML = `
