@@ -6,7 +6,7 @@
 </head>
 <body>
   <!-- Netlify scans this file at deploy to register the contact form -->
-  <form name="contact" method="POST" data-netlify="true" netlify netlify-honeypot="bot-field">
+  <form name="contact" method="POST" data-netlify="true" netlify netlify-honeypot="contact-honeypot">
     <input type="text" name="name" />
     <input type="email" name="email" />
     <select name="project-type">
@@ -20,7 +20,7 @@
       <option>Other</option>
     </select>
     <textarea name="message"></textarea>
-    <input name="bot-field" />
+    <input name="contact-honeypot" />
   </form>
 </body>
 </html>

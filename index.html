@@ -14,7 +14,7 @@
 <body>
 
   <!-- Netlify form registration (parsed at deploy; not shown on page) -->
-  <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <form name="contact" method="POST" data-netlify="true" netlify-honeypot="contact-honeypot" hidden>
     <input type="text" name="name" />
     <input type="email" name="email" />
     <select name="project-type">
@@ -28,7 +28,7 @@
       <option>Other</option>
     </select>
     <textarea name="message"></textarea>
-    <input name="bot-field" />
+    <input name="contact-honeypot" />
   </form>
 
   <!-- CANVAS PARTICLES -->
@@ -598,13 +598,20 @@
               method="POST"
               action="/thanks.html"
               data-netlify="true"
-              netlify-honeypot="bot-field"
+              netlify-honeypot="contact-honeypot"
               id="contactForm"
             >
               <input type="hidden" name="form-name" value="contact" />
-              <p class="hp-field" aria-hidden="true">
-                <label>Don’t fill this out: <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
-              </p>
+              <label class="hp-field">
+                <span>Leave empty</span>
+                <input
+                  type="text"
+                  name="contact-honeypot"
+                  tabindex="-1"
+                  autocomplete="off"
+                  aria-hidden="true"
+                />
+              </label>
               <div class="form-row">
                 <div class="fg">
                   <label for="contact-name">Your Name</label>

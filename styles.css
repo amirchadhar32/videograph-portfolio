@@ -831,7 +831,16 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
   bottom: -100px; right: -100px; border-radius: 50%; pointer-events: none;
 }
 .form-card form { display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; }
-.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.hp-field span { display: none; }
 
 .fg-recaptcha {
   display: flex;
