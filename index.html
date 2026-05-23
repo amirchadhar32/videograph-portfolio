@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BrainCore Solutions — Full Stack Dev Agency</title>
+  <meta name="description" content="BrainCore Solutions — A small, sharp full-stack development team building modern web applications, CRMs, and digital products." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- CANVAS PARTICLES -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+  <div class="cursor-text" id="cursorText"></div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <a href="#" class="nav-logo">
+      <span class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </span>
+      <span class="logo-text">BrainCore<span class="logo-dot">.</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta magnetic">
+      <span>Let's Talk</span>
+      <div class="btn-glow"></div>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#services" class="mobile-link">Services</a></li>
+      <li><a href="#work" class="mobile-link">Work</a></li>
+      <li><a href="#about" class="mobile-link">About</a></li>
+      <li><a href="#contact" class="mobile-link">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <!-- Gradient mesh blobs -->
+    <div class="mesh-blob blob-1"></div>
+    <div class="mesh-blob blob-2"></div>
+    <div class="mesh-blob blob-3"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-noise"></div>
+
+    <div class="hero-inner">
+      <!-- LEFT CONTENT -->
+      <div class="hero-content">
+        <div class="hero-badge reveal">
+          <span class="badge-pulse"></span>
+          <span class="badge-text">Available for new projects</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="ht-line" data-index="0">We Build</span>
+          <span class="ht-line gradient-text" data-index="1">Digital</span>
+          <span class="ht-line" data-index="2">Products</span>
+          <span class="ht-line italic-line" data-index="3">That <em>Work.</em></span>
+        </h1>
+
+        <p class="hero-sub reveal" data-delay="600">
+          Full-stack development team crafting fast, scalable web apps,
+          CRMs, and e-commerce platforms — from Figma to deployment.
+        </p>
+
+        <div class="hero-actions reveal" data-delay="750">
+          <a href="#work" class="btn btn-primary magnetic">
+            <span>View Our Work</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <div class="btn-glow"></div>
+          </a>
+          <a href="#contact" class="btn btn-outline magnetic">
+            <span>Start a Project</span>
+          </a>
+        </div>
+
+        <div class="hero-stats reveal" data-delay="900">
+          <div class="stat-item">
+            <span class="stat-val" data-target="4">0</span><span class="stat-sym">+</span>
+            <span class="stat-lbl">Years Exp.</span>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-item">
+            <span class="stat-val" data-target="30">0</span><span class="stat-sym">+</span>
+            <span class="stat-lbl">Projects</span>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-item">
+            <span class="stat-val" data-target="40">0</span><span class="stat-sym">%</span>
+            <span class="stat-lbl">Perf. Gain</span>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-item">
+            <span class="stat-val" data-target="8">0</span><span class="stat-sym">+</span>
+            <span class="stat-lbl">Tech Stacks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT VISUAL -->
+      <div class="hero-visual reveal" data-delay="400">
+        <!-- Floating code card -->
+        <div class="float-card code-card" id="codeCard">
+          <div class="card-header">
+            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="card-title">app.js</span>
+          </div>
+          <div class="code-body">
+            <div class="code-line"><span class="kw">const</span> <span class="var">app</span> <span class="op">=</span> <span class="fn">createApp</span><span class="pu">()</span></div>
+            <div class="code-line"><span class="kw">app</span><span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="str">Router</span><span class="pu">)</span></div>
+            <div class="code-line"><span class="kw">app</span><span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="str">Pinia</span><span class="pu">)</span></div>
+            <div class="code-line typed-line"><span class="fn">app</span><span class="pu">.</span><span class="fn">mount</span><span class="pu">(</span><span class="str">'#app'</span><span class="pu">)</span><span class="cursor-blink">|</span></div>
+          </div>
+        </div>
+
+        <!-- Floating metric card -->
+        <div class="float-card metric-card" id="metricCard">
+          <div class="metric-icon">⚡</div>
+          <div class="metric-info">
+            <span class="metric-val">40%</span>
+            <span class="metric-lbl">Faster Load Time</span>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-fill"></div>
+          </div>
+        </div>
+
+        <!-- Floating tech stack card -->
+        <div class="float-card stack-card" id="stackCard">
+          <div class="stack-label">Tech Stack</div>
+          <div class="stack-icons">
+            <div class="stack-icon php" title="PHP">PHP</div>
+            <div class="stack-icon vue" title="Vue">Vue</div>
+            <div class="stack-icon react" title="React">⚛</div>
+            <div class="stack-icon node" title="Node">Node</div>
+            <div class="stack-icon py" title="Python">Py</div>
+            <div class="stack-icon laravel" title="Laravel">L</div>
+          </div>
+        </div>
+
+        <!-- Central glow orb -->
+        <div class="hero-orb-center">
+          <div class="orb-ring orb-ring-1"></div>
+          <div class="orb-ring orb-ring-2"></div>
+          <div class="orb-ring orb-ring-3"></div>
+          <div class="orb-core">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marquee -->
+    <div class="marquee-wrap">
+      <div class="marquee-track">
+        <span>Laravel</span><span class="mdot">✦</span>
+        <span>Vue.js</span><span class="mdot">✦</span>
+        <span>React</span><span class="mdot">✦</span>
+        <span>Next.js</span><span class="mdot">✦</span>
+        <span>Node.js</span><span class="mdot">✦</span>
+        <span>PHP</span><span class="mdot">✦</span>
+        <span>Python</span><span class="mdot">✦</span>
+        <span>MySQL</span><span class="mdot">✦</span>
+        <span>PostgreSQL</span><span class="mdot">✦</span>
+        <span>REST APIs</span><span class="mdot">✦</span>
+        <span>Stripe</span><span class="mdot">✦</span>
+        <span>WordPress</span><span class="mdot">✦</span>
+        <span>Tailwind CSS</span><span class="mdot">✦</span>
+        <span>Nuxt.js</span><span class="mdot">✦</span>
+        <span>Django</span><span class="mdot">✦</span>
+        <span>Laravel</span><span class="mdot">✦</span>
+        <span>Vue.js</span><span class="mdot">✦</span>
+        <span>React</span><span class="mdot">✦</span>
+        <span>Next.js</span><span class="mdot">✦</span>
+        <span>Node.js</span><span class="mdot">✦</span>
+        <span>PHP</span><span class="mdot">✦</span>
+        <span>Python</span><span class="mdot">✦</span>
+        <span>MySQL</span><span class="mdot">✦</span>
+        <span>PostgreSQL</span><span class="mdot">✦</span>
+        <span>REST APIs</span><span class="mdot">✦</span>
+        <span>Stripe</span><span class="mdot">✦</span>
+        <span>WordPress</span><span class="mdot">✦</span>
+        <span>Tailwind CSS</span><span class="mdot">✦</span>
+        <span>Nuxt.js</span><span class="mdot">✦</span>
+        <span>Django</span><span class="mdot">✦</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">What We Do</span>
+        <h2 class="section-title">Services Built<br /><span class="gradient-text">for Growth</span></h2>
+        <p class="section-sub">End-to-end development from architecture to deployment — we handle the full stack.</p>
+      </div>
+
+      <div class="services-grid">
+        <div class="svc-card reveal" data-delay="0">
+          <div class="svc-glow"></div>
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <span class="svc-num">01</span>
+          <h3>Web Application Development</h3>
+          <p>Scalable, high-performance web apps built with Laravel, Vue.js, React, and Next.js. From MVPs to enterprise platforms.</p>
+          <div class="svc-tags"><span>Laravel</span><span>Vue.js</span><span>React</span><span>Next.js</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+
+        <div class="svc-card reveal" data-delay="80">
+          <div class="svc-glow"></div>
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <span class="svc-num">02</span>
+          <h3>CRM & Business Systems</h3>
+          <p>Custom CRM solutions that streamline client management, automate workflows, and give your team real-time visibility.</p>
+          <div class="svc-tags"><span>PHP</span><span>MySQL</span><span>REST API</span><span>Vue.js</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+
+        <div class="svc-card reveal" data-delay="160">
+          <div class="svc-glow"></div>
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </div>
+          <span class="svc-num">03</span>
+          <h3>E-Commerce Platforms</h3>
+          <p>Full-featured online stores with Stripe & PayPal integration, inventory management, and seamless checkout experiences.</p>
+          <div class="svc-tags"><span>Laravel</span><span>Stripe</span><span>PayPal</span><span>Vue.js</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+
+        <div class="svc-card reveal" data-delay="240">
+          <div class="svc-glow"></div>
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <span class="svc-num">04</span>
+          <h3>API Development & Integration</h3>
+          <p>RESTful API design, third-party integrations (ChatGPT, courier APIs, payment gateways), and microservice architecture.</p>
+          <div class="svc-tags"><span>Node.js</span><span>Python</span><span>REST</span><span>ChatGPT</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+
+        <div class="svc-card reveal" data-delay="320">
+          <div class="svc-glow"></div>
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <span class="svc-num">05</span>
+          <h3>WordPress & CMS Solutions</h3>
+          <p>Custom WordPress themes, plugin development, and CMS integrations tailored to your content and business needs.</p>
+          <div class="svc-tags"><span>WordPress</span><span>PHP</span><span>Custom Themes</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+
+        <div class="svc-card reveal" data-delay="400">
+          <div class="svc-glow"></div>
+          <div class="svc-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <span class="svc-num">06</span>
+          <h3>UI/UX to Code</h3>
+          <p>Pixel-perfect conversion of Figma designs into responsive, interactive front-end interfaces with clean, maintainable code.</p>
+          <div class="svc-tags"><span>Figma</span><span>HTML/CSS</span><span>Tailwind</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section class="work" id="work">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Portfolio</span>
+        <h2 class="section-title">Selected <span class="gradient-text">Projects</span></h2>
+        <p class="section-sub">Real products shipped for real clients — built to perform.</p>
+      </div>
+
+      <div class="projects-grid">
+        <div class="proj-card large reveal" data-delay="0">
+          <div class="proj-bg" style="--c1:#FF6B2B;--c2:#1a0a00"></div>
+          <div class="proj-content">
+            <div class="proj-top">
+              <span class="proj-num">01</span>
+              <div class="proj-tags"><span>Laravel</span><span>Vue.js</span><span>ChatGPT API</span></div>
+            </div>
+            <h3>Reguease</h3>
+            <p>AI-powered regulatory compliance platform with intelligent document processing and real-time compliance tracking.</p>
+            <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          </div>
+        </div>
+
+        <div class="proj-card reveal" data-delay="100">
+          <div class="proj-bg" style="--c1:#2B7FFF;--c2:#000a1a"></div>
+          <div class="proj-content">
+            <div class="proj-top">
+              <span class="proj-num">02</span>
+              <div class="proj-tags"><span>Laravel</span><span>Stripe</span></div>
+            </div>
+            <h3>SenderAustralia</h3>
+            <p>Shipping & logistics platform with real-time courier rates and Stripe payments.</p>
+            <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          </div>
+        </div>
+
+        <div class="proj-card reveal" data-delay="200">
+          <div class="proj-bg" style="--c1:#8B2BFF;--c2:#0a0014"></div>
+          <div class="proj-content">
+            <div class="proj-top">
+              <span class="proj-num">03</span>
+              <div class="proj-tags"><span>Python</span><span>Nuxt.js</span></div>
+            </div>
+            <h3>Clyvion</h3>
+            <p>Modern SaaS platform with Python backend and Nuxt.js frontend on PostgreSQL.</p>
+            <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          </div>
+        </div>
+
+        <div class="proj-card reveal" data-delay="100">
+          <div class="proj-bg" style="--c1:#FF2B6B;--c2:#1a0010"></div>
+          <div class="proj-content">
+            <div class="proj-top">
+              <span class="proj-num">04</span>
+              <div class="proj-tags"><span>PHP</span><span>Stripe</span><span>PayPal</span></div>
+            </div>
+            <h3>ArtTicketing</h3>
+            <p>Event ticketing for art exhibitions with dual payment gateways and QR codes.</p>
+            <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          </div>
+        </div>
+
+        <div class="proj-card large reveal" data-delay="200">
+          <div class="proj-bg" style="--c1:#2BFF8B;--c2:#001a0a"></div>
+          <div class="proj-content">
+            <div class="proj-top">
+              <span class="proj-num">05</span>
+              <div class="proj-tags"><span>PHP</span><span>jQuery</span><span>ERP</span></div>
+            </div>
+            <h3>Lock8 Equipment ERP</h3>
+            <p>Enterprise resource planning for equipment management with inventory tracking, maintenance scheduling, and third-party API integrations.</p>
+            <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          </div>
+        </div>
+
+        <div class="proj-card reveal" data-delay="300">
+          <div class="proj-bg" style="--c1:#FFB02B;--c2:#1a0e00"></div>
+          <div class="proj-content">
+            <div class="proj-top">
+              <span class="proj-num">06</span>
+              <div class="proj-tags"><span>Node.js</span><span>React</span></div>
+            </div>
+            <h3>ISO Platform</h3>
+            <p>Modern web platform with real-time features and optimized API performance.</p>
+            <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about-bg-word">BRAINCORE</div>
+    <div class="container">
+      <div class="about-layout">
+        <div class="about-left reveal">
+          <span class="section-tag">About Us</span>
+          <h2 class="section-title">Small Team.<br /><span class="gradient-text">Big Output.</span></h2>
+          <p class="about-p">We're a focused full-stack development team based in Pakistan, building digital products for clients worldwide. We combine technical depth with a designer's eye — every project we ship is fast, clean, and built to scale.</p>
+          <p class="about-p">Led by Muhammad Amir, a 4+ year full-stack developer with hands-on experience across PHP, Laravel, Vue.js, React, Python, and more. We don't just write code — we solve problems.</p>
+
+          <div class="value-list">
+            <div class="value-row reveal" data-delay="100">
+              <div class="vr-icon">⚡</div>
+              <div class="vr-text">
+                <strong>Performance First</strong>
+                <span>50+ query optimizations, 40% faster load times</span>
+              </div>
+            </div>
+            <div class="value-row reveal" data-delay="200">
+              <div class="vr-icon">🎯</div>
+              <div class="vr-text">
+                <strong>Pixel Perfect</strong>
+                <span>Figma to code with zero compromise on design</span>
+              </div>
+            </div>
+            <div class="value-row reveal" data-delay="300">
+              <div class="vr-icon">🔗</div>
+              <div class="vr-text">
+                <strong>API Experts</strong>
+                <span>Stripe, PayPal, ChatGPT, courier APIs & more</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-right">
+          <div class="profile-card reveal" data-delay="200">
+            <div class="profile-glow"></div>
+            <div class="profile-top">
+              <div class="profile-avatar">
+                <span>MA</span>
+                <div class="avatar-status"></div>
+              </div>
+              <div class="profile-meta">
+                <h3>Muhammad Amir</h3>
+                <span class="profile-role">Lead Full-Stack Developer</span>
+                <a href="https://www.linkedin.com/in/braincore" target="_blank" class="profile-li">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                  linkedin.com/in/braincore
+                </a>
+              </div>
+            </div>
+            <p class="profile-bio">4+ years building scalable web applications. Expert in Laravel, Vue.js, React, Python, and RESTful APIs. BS Information Technology, University of Okara (GPA 3.08/4.0).</p>
+            <div class="skill-bars">
+              <div class="skill-bar-item">
+                <span>Laravel / PHP</span>
+                <div class="bar"><div class="bar-fill" data-w="92"></div></div>
+                <span class="bar-pct">92%</span>
+              </div>
+              <div class="skill-bar-item">
+                <span>Vue.js / React</span>
+                <div class="bar"><div class="bar-fill" data-w="88"></div></div>
+                <span class="bar-pct">88%</span>
+              </div>
+              <div class="skill-bar-item">
+                <span>Node.js / Python</span>
+                <div class="bar"><div class="bar-fill" data-w="80"></div></div>
+                <span class="bar-pct">80%</span>
+              </div>
+              <div class="skill-bar-item">
+                <span>MySQL / PostgreSQL</span>
+                <div class="bar"><div class="bar-fill" data-w="85"></div></div>
+                <span class="bar-pct">85%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="exp-card reveal" data-delay="350">
+            <div class="exp-item">
+              <div class="exp-dot"></div>
+              <div class="exp-info">
+                <strong>Software Developer</strong>
+                <span>Probrians · 2022 – Present</span>
+              </div>
+            </div>
+            <div class="exp-item">
+              <div class="exp-dot"></div>
+              <div class="exp-info">
+                <strong>Junior Software Developer</strong>
+                <span>Probrians · 2021 – 2022</span>
+              </div>
+            </div>
+            <div class="exp-item">
+              <div class="exp-dot edu"></div>
+              <div class="exp-info">
+                <strong>BS Information Technology</strong>
+                <span>University of Okara · 2017 – 2021</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">How We Work</span>
+        <h2 class="section-title">Our <span class="gradient-text">Process</span></h2>
+      </div>
+      <div class="process-row">
+        <div class="proc-step reveal" data-delay="0">
+          <div class="proc-num">01</div>
+          <div class="proc-icon">🔍</div>
+          <h3>Discovery</h3>
+          <p>We dig into your requirements, goals, and constraints. No assumptions — just clear understanding.</p>
+        </div>
+        <div class="proc-arrow reveal" data-delay="80">→</div>
+        <div class="proc-step reveal" data-delay="160">
+          <div class="proc-num">02</div>
+          <div class="proc-icon">🎨</div>
+          <h3>Design & Plan</h3>
+          <p>Architecture planning, tech stack selection, and UI/UX wireframing before a single line of code.</p>
+        </div>
+        <div class="proc-arrow reveal" data-delay="240">→</div>
+        <div class="proc-step reveal" data-delay="320">
+          <div class="proc-num">03</div>
+          <div class="proc-icon">⚙️</div>
+          <h3>Build</h3>
+          <p>Iterative development with regular check-ins. Clean, documented, scalable code — always.</p>
+        </div>
+        <div class="proc-arrow reveal" data-delay="400">→</div>
+        <div class="proc-step reveal" data-delay="480">
+          <div class="proc-num">04</div>
+          <div class="proc-icon">🚀</div>
+          <h3>Launch & Support</h3>
+          <p>Deployment, performance optimization, and ongoing support to keep your product running at its best.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="contact-glow"></div>
+    <div class="container">
+      <div class="contact-layout">
+        <div class="contact-left reveal">
+          <span class="section-tag">Get In Touch</span>
+          <h2 class="section-title">Ready to Build<br /><span class="gradient-text">Something Great?</span></h2>
+          <p class="contact-sub">Tell us about your project. We'll get back to you within 24 hours.</p>
+
+          <div class="contact-links">
+            <a href="mailto:braincore.solutions.dev@gmail.com" class="clink">
+              <div class="clink-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div class="clink-text">
+                <span class="clink-label">Email</span>
+                <span class="clink-val">braincore.solutions.dev@gmail.com</span>
+              </div>
+              <svg class="clink-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </a>
+            <a href="tel:+923401604451" class="clink">
+              <div class="clink-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.79-1.79a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div class="clink-text">
+                <span class="clink-label">Phone</span>
+                <span class="clink-val">(+92) 340 160 4451</span>
+              </div>
+              <svg class="clink-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/braincore" target="_blank" class="clink">
+              <div class="clink-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+              </div>
+              <div class="clink-text">
+                <span class="clink-label">LinkedIn</span>
+                <span class="clink-val">linkedin.com/in/braincore</span>
+              </div>
+              <svg class="clink-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="contact-right reveal" data-delay="200">
+          <div class="form-card">
+            <div class="form-card-glow"></div>
+            <form id="contactForm">
+              <div class="form-row">
+                <div class="fg">
+                  <label>Your Name</label>
+                  <input type="text" placeholder="John Smith" required />
+                </div>
+                <div class="fg">
+                  <label>Email Address</label>
+                  <input type="email" placeholder="john@company.com" required />
+                </div>
+              </div>
+              <div class="fg">
+                <label>Project Type</label>
+                <select>
+                  <option value="">Select a service...</option>
+                  <option>Web Application</option>
+                  <option>CRM / Business System</option>
+                  <option>E-Commerce Platform</option>
+                  <option>API Development</option>
+                  <option>WordPress / CMS</option>
+                  <option>UI/UX to Code</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Tell Us About Your Project</label>
+                <textarea rows="5" placeholder="Describe your project, goals, and timeline..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full magnetic">
+                <span>Send Message</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <div class="btn-glow"></div>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo">
+            <span class="logo-mark">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <span class="logo-text">BrainCore<span class="logo-dot">.</span></span>
+          </a>
+          <p>Building the web, one project at a time.<br/>Renala Khurd, Pakistan 🇵🇰</p>
+        </div>
+        <div class="footer-nav">
+          <a href="#services">Services</a>
+          <a href="#work">Work</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 BrainCore Solutions. All rights reserved.</span>
+        <span class="footer-heart">Made with ❤️ in Pakistan</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
