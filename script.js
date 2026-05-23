@@ -203,36 +203,98 @@ function getRecaptchaV3Token() {
   });
 }
 
-/* ---- CONTACT FORM: native POST to Netlify (same as server/curl tests) ---- */
+function buildContactPayload(form) {
+  const honeypot = form.querySelector('[name="contact-honeypot"]');
+  if (honeypot && honeypot.value.trim() !== '') {
+    throw new Error('spam');
+  }
+
+  const data = new FormData(form);
+  data.delete('contact-honeypot');
+
+  if (!data.get('form-name')) {
+    data.set('form-name', form.getAttribute('name') || 'contact');
+  }
+
+  return new URLSearchParams(data).toString();
+}
+
+function isNetlifyFormSuccess(html) {
+  return (
+    html.includes('Your form submission has been received') ||
+    html.includes('form-success')
+  );
+}
+
+async function postContactToNetlify(form) {
+  const res = await fetch(form.getAttribute('action') || '/thanks.html', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: buildContactPayload(form),
+  });
+
+  const text = await res.text();
+  if (!isNetlifyFormSuccess(text)) {
+    throw new Error('netlify');
+  }
+}
+
+/* ---- CONTACT FORM: reCAPTCHA → Netlify → success on same page ---- */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-  contactForm.addEventListener('submit', function(e) {
+  contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const btn = this.querySelector('button[type="submit"]');
+    const originalHTML = btn.innerHTML;
     const form = this;
-    const honeypot = form.querySelector('[name="contact-honeypot"]');
-
-    if (honeypot && honeypot.value.trim() !== '') {
-      return;
-    }
+    const siteKey = window.RECAPTCHA_SITE_KEY && String(window.RECAPTCHA_SITE_KEY).trim();
 
     btn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
         <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
       </svg>
-      <span>Sending...</span>`;
+      <span>${siteKey ? 'Verifying...' : 'Sending...'}</span>`;
     btn.disabled = true;
 
-    const sendToNetlify = () => form.submit();
+    try {
+      if (siteKey) {
+        const token = await getRecaptchaV3Token();
+        if (!token) throw new Error('recaptcha');
+        btn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          </svg>
+          <span>Sending...</span>`;
+      }
 
-    const siteKey = window.RECAPTCHA_SITE_KEY && String(window.RECAPTCHA_SITE_KEY).trim();
-    if (!siteKey) {
-      sendToNetlify();
-      return;
+      await postContactToNetlify(form);
+
+      btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Message Sent!</span>`;
+      btn.style.background = '#22c55e';
+      form.reset();
+    } catch (err) {
+      const msg =
+        err && err.message === 'recaptcha'
+          ? 'reCAPTCHA failed — refresh & try'
+          : 'Failed — try again';
+      btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <span>${msg}</span>`;
+      btn.style.background = '#ef4444';
+    } finally {
+      setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3500);
     }
-
-    getRecaptchaV3Token().then(sendToNetlify).catch(sendToNetlify);
   });
 }
 
