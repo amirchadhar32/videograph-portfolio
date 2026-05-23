@@ -204,11 +204,6 @@ function getRecaptchaV3Token() {
 }
 
 function buildContactPayload(form) {
-  const honeypot = form.querySelector('[name="contact-honeypot"]');
-  if (honeypot && honeypot.value.trim() !== '') {
-    throw new Error('spam');
-  }
-
   const data = new FormData(form);
   data.delete('contact-honeypot');
 
@@ -264,6 +259,9 @@ async function postContactToNetlify(form) {
 /* ---- CONTACT FORM: reCAPTCHA → Netlify → message from real response ---- */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
+  const honeypotField = contactForm.querySelector('[name="contact-honeypot"]');
+  if (honeypotField) honeypotField.value = '';
+
   contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -281,6 +279,9 @@ if (contactForm) {
       <span>Please wait...</span>`;
 
     try {
+      const honeypot = form.querySelector('[name="contact-honeypot"]');
+      if (honeypot) honeypot.value = '';
+
       if (siteKey) {
         setFormStatus('info', 'Step 1/2: Verifying reCAPTCHA...');
         const token = await getRecaptchaV3Token();
@@ -311,9 +312,7 @@ if (contactForm) {
         throw new Error('netlify');
       }
     } catch (err) {
-      if (err && err.message === 'spam') {
-        setFormStatus('error', 'Submission blocked. Please try again.');
-      } else if (err && err.message !== 'recaptcha' && err.message !== 'netlify') {
+      if (err && err.message !== 'recaptcha' && err.message !== 'netlify') {
         setFormStatus('error', 'Network error. Check your connection and try again.');
       }
 
