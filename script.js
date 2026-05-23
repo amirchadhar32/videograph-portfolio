@@ -205,30 +205,31 @@ function getRecaptchaV3Token() {
 
 function buildContactFormPayload(form) {
   const data = new FormData(form);
-  const token = data.get('g-recaptcha-response');
-  if (!token) data.delete('g-recaptcha-response');
   return new URLSearchParams(data).toString();
 }
 
-function submitContactForm(form, btn, originalHTML) {
+async function submitContactForm(form, btn) {
+  const action = form.getAttribute('action') || '/thanks.html';
   const payload = buildContactFormPayload(form);
 
-  return fetch(form.getAttribute('action') || '/', {
+  const res = await fetch(action, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: payload,
-  }).then((res) => {
-    if (!res.ok) throw new Error('Submit failed');
-    btn.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-      <span>Message Sent!</span>`;
-    btn.style.background = '#22c55e';
-    form.reset();
-    const tokenField = form.querySelector('[name="g-recaptcha-response"]');
-    if (tokenField) tokenField.value = '';
   });
+
+  const text = await res.text();
+  const accepted = res.ok && text.includes('form-success');
+
+  if (!accepted) throw new Error('Netlify did not accept this submission');
+
+  btn.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    <span>Message Sent!</span>`;
+  btn.style.background = '#22c55e';
+  form.reset();
 }
 
 /* ---- CONTACT FORM (Netlify Forms + reCAPTCHA v3) ---- */
@@ -240,7 +241,6 @@ if (contactForm) {
     const btn = this.querySelector('button[type="submit"]');
     const originalHTML = btn.innerHTML;
     const form = this;
-    const tokenField = form.querySelector('[name="g-recaptcha-response"]');
 
     btn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
@@ -250,14 +250,7 @@ if (contactForm) {
     btn.disabled = true;
 
     getRecaptchaV3Token()
-      .then((token) => {
-        if (tokenField) tokenField.value = token || '';
-        return submitContactForm(form, btn, originalHTML);
-      })
-      .catch(() => {
-        if (tokenField) tokenField.value = '';
-        return submitContactForm(form, btn, originalHTML);
-      })
+      .then(() => submitContactForm(form, btn))
       .catch(() => {
         btn.innerHTML = `
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
