@@ -137,7 +137,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-/* ---- CONTACT FORM ---- */
+/* ---- CONTACT FORM (Netlify Forms) ---- */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', function(e) {
@@ -146,7 +146,6 @@ if (contactForm) {
     const btn = this.querySelector('button[type="submit"]');
     const originalHTML = btn.innerHTML;
 
-    // Loading state
     btn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
         <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
@@ -154,22 +153,36 @@ if (contactForm) {
       <span>Sending...</span>`;
     btn.disabled = true;
 
-    // Simulate send (replace with real API call)
-    setTimeout(() => {
-      btn.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        <span>Message Sent!</span>`;
-      btn.style.background = '#22c55e';
-
-      setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.style.background = '';
-        btn.disabled = false;
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(new FormData(contactForm)).toString(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Submit failed');
+        btn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Message Sent!</span>`;
+        btn.style.background = '#22c55e';
         contactForm.reset();
-      }, 3000);
-    }, 1500);
+      })
+      .catch(() => {
+        btn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          <span>Failed — try again</span>`;
+        btn.style.background = '#ef4444';
+      })
+      .finally(() => {
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 3000);
+      });
   });
 }
 

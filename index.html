@@ -574,20 +574,30 @@
         <div class="contact-right reveal" data-delay="200">
           <div class="form-card">
             <div class="form-card-glow"></div>
-            <form id="contactForm">
+            <form
+              name="contact"
+              method="POST"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
+              id="contactForm"
+            >
+              <input type="hidden" name="form-name" value="contact" />
+              <p class="hp-field" aria-hidden="true">
+                <label>Don’t fill this out: <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+              </p>
               <div class="form-row">
                 <div class="fg">
-                  <label>Your Name</label>
-                  <input type="text" placeholder="John Smith" required />
+                  <label for="contact-name">Your Name</label>
+                  <input type="text" id="contact-name" name="name" placeholder="John Smith" required />
                 </div>
                 <div class="fg">
-                  <label>Email Address</label>
-                  <input type="email" placeholder="john@company.com" required />
+                  <label for="contact-email">Email Address</label>
+                  <input type="email" id="contact-email" name="email" placeholder="john@company.com" required />
                 </div>
               </div>
               <div class="fg">
-                <label>Project Type</label>
-                <select>
+                <label for="contact-project">Project Type</label>
+                <select id="contact-project" name="project-type">
                   <option value="">Select a service...</option>
                   <option>Web Application</option>
                   <option>CRM / Business System</option>
@@ -599,8 +609,8 @@
                 </select>
               </div>
               <div class="fg">
-                <label>Tell Us About Your Project</label>
-                <textarea rows="5" placeholder="Describe your project, goals, and timeline..." required></textarea>
+                <label for="contact-message">Tell Us About Your Project</label>
+                <textarea id="contact-message" name="message" rows="5" placeholder="Describe your project, goals, and timeline..." required></textarea>
               </div>
               <button type="submit" class="btn btn-primary btn-full magnetic">
                 <span>Send Message</span>
