@@ -832,6 +832,27 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
 }
 .form-card form { display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; }
 .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.fg-recaptcha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.fg-recaptcha [data-netlify-recaptcha="true"] {
+  min-height: 78px;
+}
+.recaptcha-notice {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--gray-3);
+  margin: 0;
+}
+.recaptcha-notice a {
+  color: var(--gray-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.recaptcha-notice a:hover { color: var(--orange); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .fg { display: flex; flex-direction: column; gap: 8px; }
 .fg label { font-size: 12px; font-weight: 700; color: var(--gray-2); letter-spacing: .04em; text-transform: uppercase; }

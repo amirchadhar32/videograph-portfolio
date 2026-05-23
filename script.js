@@ -137,7 +137,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-/* ---- CONTACT FORM (Netlify Forms) ---- */
+/* ---- CONTACT FORM (Netlify Forms + reCAPTCHA) ---- */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', function(e) {
@@ -145,6 +145,17 @@ if (contactForm) {
 
     const btn = this.querySelector('button[type="submit"]');
     const originalHTML = btn.innerHTML;
+    const recaptchaField = this.querySelector('[name="g-recaptcha-response"]');
+
+    if (recaptchaField && !recaptchaField.value) {
+      btn.innerHTML = '<span>Complete the reCAPTCHA first</span>';
+      btn.style.background = '#f59e0b';
+      setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.style.background = '';
+      }, 2500);
+      return;
+    }
 
     btn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 0.8s linear infinite">
@@ -169,6 +180,7 @@ if (contactForm) {
           <span>Message Sent!</span>`;
         btn.style.background = '#22c55e';
         contactForm.reset();
+        if (window.grecaptcha) window.grecaptcha.reset();
       })
       .catch(() => {
         btn.innerHTML = `
