@@ -426,6 +426,117 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+/* ---- HERO CODE CARD: rotate language snippets ---- */
+(function initCodeSnippetRotation() {
+  const codeCard = document.getElementById('codeCard');
+  if (!codeCard) return;
+
+  const titleEl = codeCard.querySelector('.card-title');
+  const bodyEl  = codeCard.querySelector('.code-body');
+  if (!titleEl || !bodyEl) return;
+
+  // Color tokens already styled in CSS: kw, var, fn, op, pu, str
+  const snippets = [
+    // Vue.js
+    { title: 'app.js', lines: [
+      `<span class="kw">const</span> <span class="var">app</span> <span class="op">=</span> <span class="fn">createApp</span><span class="pu">()</span>`,
+      `<span class="kw">app</span><span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="str">Router</span><span class="pu">)</span>`,
+      `<span class="kw">app</span><span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="str">Pinia</span><span class="pu">)</span>`,
+      `<span class="fn">app</span><span class="pu">.</span><span class="fn">mount</span><span class="pu">(</span><span class="str">'#app'</span><span class="pu">)</span>`,
+    ]},
+    // Laravel / PHP
+    { title: 'web.php', lines: [
+      `<span class="kw">use</span> <span class="var">App\\Route</span><span class="pu">;</span>`,
+      `<span class="var">Route</span><span class="pu">::</span><span class="fn">get</span><span class="pu">(</span><span class="str">'/'</span><span class="pu">,</span> <span class="var">Home</span><span class="pu">)</span>`,
+      `<span class="var">Route</span><span class="pu">::</span><span class="fn">resource</span><span class="pu">(</span><span class="str">'users'</span><span class="pu">)</span>`,
+      `<span class="var">Route</span><span class="pu">::</span><span class="fn">middleware</span><span class="pu">(</span><span class="str">'auth'</span><span class="pu">)</span>`,
+    ]},
+    // React
+    { title: 'App.jsx', lines: [
+      `<span class="kw">const</span> <span class="fn">App</span> <span class="op">=</span> <span class="pu">() =&gt; {</span>`,
+      `  <span class="kw">const</span> <span class="pu">[</span><span class="var">n</span><span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="str">0</span><span class="pu">)</span>`,
+      `  <span class="kw">return</span> <span class="pu">&lt;</span><span class="fn">Hero</span> <span class="var">n</span><span class="op">=</span><span class="pu">{</span><span class="var">n</span><span class="pu">}/&gt;</span>`,
+      `<span class="pu">}</span>`,
+    ]},
+    // Django / Python
+    { title: 'views.py', lines: [
+      `<span class="kw">def</span> <span class="fn">home</span><span class="pu">(</span><span class="var">request</span><span class="pu">):</span>`,
+      `  <span class="var">posts</span> <span class="op">=</span> <span class="fn">Post</span><span class="pu">.</span><span class="fn">all</span><span class="pu">()</span>`,
+      `  <span class="var">ctx</span> <span class="op">=</span> <span class="pu">{</span><span class="str">'posts'</span><span class="pu">:</span> <span class="var">posts</span><span class="pu">}</span>`,
+      `  <span class="kw">return</span> <span class="fn">render</span><span class="pu">(</span><span class="var">ctx</span><span class="pu">)</span>`,
+    ]},
+    // Node / Express
+    { title: 'server.js', lines: [
+      `<span class="kw">const</span> <span class="var">app</span> <span class="op">=</span> <span class="fn">express</span><span class="pu">()</span>`,
+      `<span class="var">app</span><span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">cors</span><span class="pu">())</span>`,
+      `<span class="var">app</span><span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="str">'/api'</span><span class="pu">,</span> <span class="var">router</span><span class="pu">)</span>`,
+      `<span class="var">app</span><span class="pu">.</span><span class="fn">listen</span><span class="pu">(</span><span class="str">3000</span><span class="pu">)</span>`,
+    ]},
+    // Next.js / TypeScript
+    { title: 'page.tsx', lines: [
+      `<span class="kw">async function</span> <span class="fn">Page</span><span class="pu">() {</span>`,
+      `  <span class="kw">const</span> <span class="var">d</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">getData</span><span class="pu">()</span>`,
+      `  <span class="kw">return</span> <span class="pu">&lt;</span><span class="fn">Hero</span> <span class="var">data</span><span class="op">=</span><span class="pu">{</span><span class="var">d</span><span class="pu">}/&gt;</span>`,
+      `<span class="pu">}</span>`,
+    ]},
+    // MySQL
+    { title: 'query.sql', lines: [
+      `<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="var">users</span>`,
+      `<span class="kw">WHERE</span> <span class="var">status</span> <span class="op">=</span> <span class="str">'active'</span>`,
+      `<span class="kw">ORDER BY</span> <span class="var">created</span> <span class="kw">DESC</span>`,
+      `<span class="kw">LIMIT</span> <span class="str">10</span><span class="pu">;</span>`,
+    ]},
+    // ChatGPT / Python
+    { title: 'bot.py', lines: [
+      `<span class="kw">from</span> <span class="var">openai</span> <span class="kw">import</span> <span class="fn">OpenAI</span>`,
+      `<span class="var">client</span> <span class="op">=</span> <span class="fn">OpenAI</span><span class="pu">(</span><span class="var">key</span><span class="pu">)</span>`,
+      `<span class="var">res</span> <span class="op">=</span> <span class="var">client</span><span class="pu">.</span><span class="fn">chat</span><span class="pu">(</span><span class="var">msg</span><span class="pu">)</span>`,
+      `<span class="fn">print</span><span class="pu">(</span><span class="var">res</span><span class="pu">.</span><span class="var">text</span><span class="pu">)</span>`,
+    ]},
+    // Nuxt / Vue
+    { title: 'index.vue', lines: [
+      `<span class="pu">&lt;</span><span class="kw">script setup</span><span class="pu">&gt;</span>`,
+      `<span class="kw">const</span> <span class="pu">{</span> <span class="var">data</span> <span class="pu">} =</span> <span class="kw">await</span> <span class="fn">useFetch</span><span class="pu">()</span>`,
+      `<span class="kw">const</span> <span class="var">user</span> <span class="op">=</span> <span class="fn">useUser</span><span class="pu">()</span>`,
+      `<span class="pu">&lt;/</span><span class="kw">script</span><span class="pu">&gt;</span>`,
+    ]},
+    // Stripe / Node
+    { title: 'pay.js', lines: [
+      `<span class="kw">const</span> <span class="var">stripe</span> <span class="op">=</span> <span class="fn">Stripe</span><span class="pu">(</span><span class="var">KEY</span><span class="pu">)</span>`,
+      `<span class="kw">await</span> <span class="var">stripe</span><span class="pu">.</span><span class="fn">charges</span><span class="pu">.</span><span class="fn">create</span><span class="pu">(</span>`,
+      `  <span class="pu">{</span> <span class="var">amount</span><span class="pu">:</span> <span class="str">2000</span> <span class="pu">})</span>`,
+      `<span class="fn">res</span><span class="pu">.</span><span class="fn">redirect</span><span class="pu">(</span><span class="str">'/thanks'</span><span class="pu">)</span>`,
+    ]},
+  ];
+
+  let idx = Math.floor(Math.random() * snippets.length);
+  let paused = false;
+
+  function render(i) {
+    const s = snippets[i];
+    codeCard.classList.add('snippet-swapping');
+    setTimeout(() => {
+      titleEl.textContent = s.title;
+      bodyEl.innerHTML = s.lines.map((line, j) => {
+        const isLast = j === s.lines.length - 1;
+        return `<div class="code-line${isLast ? ' typed-line' : ''}">${line}${isLast ? '<span class="cursor-blink">|</span>' : ''}</div>`;
+      }).join('');
+      codeCard.classList.remove('snippet-swapping');
+    }, 280);
+  }
+
+  render(idx);
+
+  codeCard.addEventListener('mouseenter', () => { paused = true;  });
+  codeCard.addEventListener('mouseleave', () => { paused = false; });
+
+  setInterval(() => {
+    if (paused || document.hidden) return;
+    idx = (idx + 1) % snippets.length;
+    render(idx);
+  }, 6000);
+})();
+
 /* ---- TESTIMONIAL SWAP (click-to-feature) ---- */
 (function initTestimonialSwap() {
     const featured = document.querySelector('.featured-testi');
