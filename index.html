@@ -1552,6 +1552,54 @@
         </div>
     </footer>
 
+    <!-- CHATBOT -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <button class="chatbot-toggle chatbot-robot-btn magnetic" id="chatbotToggle" aria-label="Open chat" aria-expanded="false">
+            <span class="chatbot-robot-glow" aria-hidden="true"></span>
+            <span class="chatbot-robot-ring" aria-hidden="true"></span>
+            <span class="chatbot-robot-figure" aria-hidden="true">
+                <img
+                    src="assets/chatbot-robot-static.png"
+                    alt=""
+                    class="chatbot-robot-img"
+                    width="80"
+                    height="80"
+                    decoding="async"
+                />
+            </span>
+            <span class="chatbot-pill">Ask me</span>
+        </button>
+
+        <div class="chatbot-panel" id="chatbotPanel" hidden>
+            <div class="chatbot-head">
+                <div class="chatbot-title-wrap">
+                    <span class="chatbot-dot" aria-hidden="true"></span>
+                    <div>
+                        <strong>BrainCore Assistant</strong>
+                        <span>Usually replies instantly</span>
+                    </div>
+                </div>
+                <button class="chatbot-close" id="chatbotClose" aria-label="Close chat">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="chatbot-messages" id="chatbotMessages"></div>
+
+            <form class="chatbot-form" id="chatbotForm">
+                <input type="text" id="chatbotInput" placeholder="Ask about services, price, timeline..." required />
+                <button type="submit" class="chatbot-send" aria-label="Send message">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M22 2L11 13" />
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 
