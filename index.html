@@ -14,6 +14,7 @@
         rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <script src="recaptcha-config.js"></script>
+    <script src="linkedin-config.js"></script>
 </head>
 
 <body>
@@ -59,6 +60,7 @@
             <li><a href="#work">Work</a></li>
             <li><a href="#testimonials">Testimonials</a></li>
             <li><a href="#about">About</a></li>
+            <li><a href="#linkedin">Posts</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
         <a href="#contact" class="nav-cta magnetic">
@@ -77,6 +79,7 @@
             <li><a href="#work" class="mobile-link">Work</a></li>
             <li><a href="#testimonials" class="mobile-link">Testimonials</a></li>
             <li><a href="#about" class="mobile-link">About</a></li>
+            <li><a href="#linkedin" class="mobile-link">Posts</a></li>
             <li><a href="#contact" class="mobile-link">Contact</a></li>
         </ul>
     </div>
@@ -1386,6 +1389,35 @@
         </div>
     </section>
 
+    <!-- LINKEDIN POSTS -->
+    <section class="linkedin-feed" id="linkedin">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Posts</span>
+                <h2 class="section-title">Latest <span class="gradient-text">Posts</span></h2>
+                <p class="section-sub">Updates from my Posts .</p>
+            </div>
+
+            <div class="linkedin-toolbar reveal" data-delay="80">
+                <a href="https://www.linkedin.com/in/braincore" target="_blank" rel="noopener noreferrer" class="linkedin-profile-link magnetic" id="linkedinProfileLink">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
+                        <circle cx="4" cy="4" r="2" />
+                    </svg>
+                    <span>Follow on LinkedIn</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10" /></svg>
+                </a>
+                <span class="linkedin-sync-badge" id="linkedinSyncBadge">Loading posts...</span>
+            </div>
+
+            <div class="linkedin-posts-grid" id="linkedinPostsGrid">
+                <div class="linkedin-skeleton reveal" data-delay="0"></div>
+                <div class="linkedin-skeleton reveal" data-delay="80"></div>
+                <div class="linkedin-skeleton reveal" data-delay="160"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- CONTACT -->
     <section class="contact" id="contact">
         <div class="contact-glow"></div>
@@ -1542,6 +1574,7 @@
                     <a href="#work">Work</a>
                     <a href="#testimonials">Testimonials</a>
                     <a href="#about">About</a>
+                    <a href="#linkedin">Posts</a>
                     <a href="#contact">Contact</a>
                 </div>
             </div>

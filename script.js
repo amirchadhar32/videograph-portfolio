@@ -706,3 +706,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 450);
     });
 })();
+
+/* ---- LINKEDIN POSTS (API auto-fetch or JSON fallback) ---- */
+(function initLinkedInFeed() {
+    const grid = document.getElementById('linkedinPostsGrid');
+    const badge = document.getElementById('linkedinSyncBadge');
+    const profileLink = document.getElementById('linkedinProfileLink');
+    if (!grid) return;
+
+    const postsFile = window.LINKEDIN_POSTS_FILE || 'linkedin-posts.json';
+    const feedApi = window.LINKEDIN_FEED_API || '/.netlify/functions/linkedin-feed';
+    const defaultProfile = window.LINKEDIN_PROFILE_URL || 'https://www.linkedin.com/in/braincore';
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function formatDate(isoDate) {
+        if (!isoDate) return '';
+        const d = new Date(isoDate);
+        if (Number.isNaN(d.getTime())) return isoDate;
+        return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function setBadge(type, text) {
+        if (!badge) return;
+        badge.textContent = text;
+        badge.classList.remove('is-live', 'is-manual');
+        if (type === 'live') badge.classList.add('is-live');
+        if (type === 'manual') badge.classList.add('is-manual');
+    }
+
+    function renderPosts(posts, profileUrl) {
+        if (profileLink && profileUrl) profileLink.href = profileUrl;
+
+        if (!posts || !posts.length) {
+            grid.innerHTML = '<p class="linkedin-empty reveal visible">No LinkedIn posts yet. Add posts in <code>linkedin-posts.json</code> or connect the LinkedIn API on Netlify.</p>';
+            return;
+        }
+
+        grid.innerHTML = posts.map((post, i) => `
+      <article class="linkedin-post-card reveal visible" data-delay="${i * 80}">
+        <time class="linkedin-post-date" datetime="${escapeHtml(post.date || '')}">${formatDate(post.date)}</time>
+        <p class="linkedin-post-text">${escapeHtml(post.text || '')}</p>
+        <a class="linkedin-post-link" href="${escapeHtml(post.url || profileUrl)}" target="_blank" rel="noopener noreferrer">
+          Read on LinkedIn
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+      </article>
+    `).join('');
+    }
+
+    async function loadJsonFallback() {
+        const res = await fetch(postsFile, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Could not load linkedin-posts.json');
+        return res.json();
+    }
+
+    async function loadFromApi() {
+        const res = await fetch(feedApi, { cache: 'no-store' });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.posts && data.posts.length) {
+            return { data, source: 'api' };
+        }
+        return null;
+    }
+
+    (async function loadLinkedInPosts() {
+        try {
+            const apiResult = await loadFromApi();
+            if (apiResult) {
+                setBadge('live', 'Live from LinkedIn');
+                renderPosts(apiResult.data.posts, apiResult.data.profileUrl || defaultProfile);
+                return;
+            }
+
+            const json = await loadJsonFallback();
+            setBadge('manual', 'From posts list');
+            renderPosts(json.posts, json.profileUrl || defaultProfile);
+        } catch (err) {
+            console.warn('LinkedIn feed:', err);
+            setBadge('manual', 'Could not load posts');
+            grid.innerHTML = '<p class="linkedin-empty reveal visible">Could not load LinkedIn posts. Check <code>linkedin-posts.json</code> or Netlify LinkedIn API settings.</p>';
+        }
+    })();
+})();

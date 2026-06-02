@@ -1,0 +1,23 @@
+{
+  "profileUrl": "https://www.linkedin.com/in/braincore",
+  "posts": [
+    {
+      "id": "sample-1",
+      "date": "2026-05-18",
+      "text": "Just shipped a Laravel + Vue CRM with real-time dashboards and Stripe billing. Performance tuning cut load time by 40%. Happy to help if you are planning a similar build.",
+      "url": "https://www.linkedin.com/in/braincore"
+    },
+    {
+      "id": "sample-2",
+      "date": "2026-05-02",
+      "text": "Figma to production in 3 weeks: React frontend, Node API, PostgreSQL. Clean architecture + reusable components = faster iterations for the client team.",
+      "url": "https://www.linkedin.com/in/braincore"
+    },
+    {
+      "id": "sample-3",
+      "date": "2026-04-12",
+      "text": "Integrated ChatGPT + document pipelines for a compliance platform. Lesson learned: always validate prompts and log API usage from day one.",
+      "url": "https://www.linkedin.com/in/braincore"
+    }
+  ]
+}
