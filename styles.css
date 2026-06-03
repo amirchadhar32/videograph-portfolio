@@ -1424,26 +1424,34 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
 .footer-heart { color: var(--gray-3); }
 
 /* ============================================
-   TAWK.TO LIVE CHAT (widget position overrides)
-   Set colors/position in tawk.to dashboard too.
+   TAWK.TO — bottom-left (backup if dashboard uses right)
 ============================================ */
-html.tawk-ready .widget-visible iframe,
+html.tawk-ready iframe[title*="chat"],
 html.tawk-ready #tawk-bubble-container,
-html.tawk-ready .tawk-min-container {
+html.tawk-ready .tawk-min-container,
+html.tawk-ready .tawk-button,
+html.tawk-ready [class*="tawk"] {
   z-index: 1200 !important;
 }
 
-/* Prefer bottom-left (same as old Ask me button) */
 html.tawk-ready #tawk-bubble-container,
-html.tawk-ready .tawk-min-container {
+html.tawk-ready .tawk-min-container,
+html.tawk-ready .tawk-button {
   left: 20px !important;
   right: auto !important;
   bottom: 20px !important;
 }
 
+html.tawk-ready .widget-visible {
+  left: 20px !important;
+  right: auto !important;
+}
+
 @media (max-width: 768px) {
   html.tawk-ready #tawk-bubble-container,
-  html.tawk-ready .tawk-min-container {
+  html.tawk-ready .tawk-min-container,
+  html.tawk-ready .tawk-button,
+  html.tawk-ready .widget-visible {
     left: 14px !important;
     bottom: 14px !important;
   }

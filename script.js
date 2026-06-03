@@ -637,6 +637,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
 
+    const pos = (window.TAWK_POSITION && String(window.TAWK_POSITION).trim()) || 'bl';
+    const offsetX = Number(window.TAWK_OFFSET_X) || 20;
+    const offsetY = Number(window.TAWK_OFFSET_Y) || 20;
+    const offsetMobile = Math.max(10, offsetX - 6);
+
+    /* Position must be set before embed script loads */
+    window.Tawk_API.customStyle = {
+        visibility: {
+            desktop: { position: pos, xOffset: offsetX, yOffset: offsetY },
+            mobile: { position: pos, xOffset: offsetMobile, yOffset: offsetMobile },
+        },
+    };
+
     window.Tawk_API.onLoad = function onTawkLoad() {
         document.documentElement.classList.add('tawk-ready');
     };
