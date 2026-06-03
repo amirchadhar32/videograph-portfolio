@@ -630,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const widgetId = (window.TAWK_WIDGET_ID && String(window.TAWK_WIDGET_ID).trim()) || 'default';
 
     if (!propertyId) {
-        console.info('tawk.to: Add your Property ID in tawk-config.js (from https://dashboard.tawk.to)');
+        console.info('tawk.to: Add your Property ID in config.js (from https://dashboard.tawk.to)');
         return;
     }
 
