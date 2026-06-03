@@ -624,87 +624,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 })();
 
-/* ---- LEFT CHATBOT (free local auto-reply) ---- */
-(function initChatbotWidget() {
-    const widget = document.getElementById('chatbotWidget');
-    if (!widget) return;
+/* ---- TAWK.TO LIVE CHAT (https://tawk.to) ---- */
+(function initTawkTo() {
+    const propertyId = window.TAWK_PROPERTY_ID && String(window.TAWK_PROPERTY_ID).trim();
+    const widgetId = (window.TAWK_WIDGET_ID && String(window.TAWK_WIDGET_ID).trim()) || 'default';
 
-    const panel = document.getElementById('chatbotPanel');
-    const toggleBtn = document.getElementById('chatbotToggle');
-    const closeBtn = document.getElementById('chatbotClose');
-    const form = document.getElementById('chatbotForm');
-    const input = document.getElementById('chatbotInput');
-    const messages = document.getElementById('chatbotMessages');
-
-    if (!panel || !toggleBtn || !closeBtn || !form || !input || !messages) return;
-
-    function addMessage(text, who) {
-        const item = document.createElement('div');
-        item.className = `chat-msg ${who}`;
-        item.textContent = text;
-        messages.appendChild(item);
-        messages.scrollTop = messages.scrollHeight;
+    if (!propertyId) {
+        console.info('tawk.to: Add your Property ID in tawk-config.js (from https://dashboard.tawk.to)');
+        return;
     }
 
-    function getBotReply(raw) {
-        const msg = String(raw || '').toLowerCase();
+    window.Tawk_API = window.Tawk_API || {};
+    window.Tawk_LoadStart = new Date();
 
-        if (/(price|cost|budget|quote|charges)/.test(msg)) {
-            return 'Pricing depends on scope. Basic website starts lower, custom web apps/CRM are quoted after requirements. Share your idea and timeline for a quick estimate.';
-        }
-        if (/(service|what do you do|offer)/.test(msg)) {
-            return 'We build web apps, CRM systems, e-commerce stores, APIs, WordPress/CMS solutions, and Figma-to-code frontends.';
-        }
-        if (/(time|timeline|how long|delivery)/.test(msg)) {
-            return 'Typical delivery: 1-2 weeks for landing pages, 3-6 weeks for medium apps, and longer for complex platforms.';
-        }
-        if (/(tech|stack|laravel|php|react|vue|next|django|node|mysql|api)/.test(msg)) {
-            return 'Our stack includes Laravel/PHP, React, Vue/Nuxt, Next.js, Node.js, Django/Python, MySQL/PostgreSQL, and REST API integrations.';
-        }
-        if (/(contact|email|phone|call|whatsapp)/.test(msg)) {
-            return 'You can contact us at braincore.solutions.dev@gmail.com or call (+92) 340 160 4451.';
-        }
-        if (/(hello|hi|salam|hey)/.test(msg)) {
-            return 'Hi! Ask me about services, pricing, timeline, or tech stack. I can help quickly.';
-        }
-        return 'Thanks for your message. I can help with services, pricing, timeline, and technologies. For exact project discussion, use the contact form below.';
-    }
+    window.Tawk_API.onLoad = function onTawkLoad() {
+        document.documentElement.classList.add('tawk-ready');
+    };
 
-    let greeted = false;
-    function openPanel() {
-        widget.classList.add('open');
-        panel.hidden = false;
-        toggleBtn.setAttribute('aria-expanded', 'true');
-        if (!greeted) {
-            addMessage('Hi! I am BrainCore Assistant. How can I help you today?', 'bot');
-            greeted = true;
-        }
-        setTimeout(() => input.focus(), 120);
-    }
-
-    function closePanel() {
-        widget.classList.remove('open');
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        setTimeout(() => { panel.hidden = true; }, 260);
-    }
-
-    toggleBtn.addEventListener('click', () => {
-        if (widget.classList.contains('open')) closePanel();
-        else openPanel();
-    });
-    closeBtn.addEventListener('click', closePanel);
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const text = input.value.trim();
-        if (!text) return;
-        addMessage(text, 'user');
-        input.value = '';
-
-        setTimeout(() => {
-            addMessage(getBotReply(text), 'bot');
-        }, 450);
-    });
+    const s1 = document.createElement('script');
+    s1.async = true;
+    s1.src = `https://embed.tawk.to/${encodeURIComponent(propertyId)}/${encodeURIComponent(widgetId)}`;
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    document.body.appendChild(s1);
 })();
 
 /* ---- LINKEDIN POSTS (API auto-fetch or JSON fallback) ---- */
