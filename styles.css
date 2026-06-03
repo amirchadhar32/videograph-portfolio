@@ -1447,7 +1447,7 @@ html.tawk-ready [class*="tawk"] {
 html.tawk-ready #tawk-bubble-container,
 html.tawk-ready .tawk-min-container,
 html.tawk-ready .tawk-button {
-  left: 20px !important;
+  left: 40px !important;
   right: auto !important;
   bottom: 20px !important;
 }
