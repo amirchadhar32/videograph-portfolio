@@ -650,8 +650,37 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
+    function hideTawkAttentionGrabber() {
+        const selectors = [
+            '.tawk-attention-grabber',
+            '#tawk-attention-grabber',
+            '[class*="attention-grabber"]',
+            '[class*="AttentionGrabber"]',
+            '[id*="attention-grabber"]',
+        ];
+        selectors.forEach((sel) => {
+            try {
+                document.querySelectorAll(sel).forEach((el) => {
+                    el.style.setProperty('display', 'none', 'important');
+                    el.style.setProperty('visibility', 'hidden', 'important');
+                    el.setAttribute('aria-hidden', 'true');
+                });
+            } catch {
+                /* invalid selector in old browsers */
+            }
+        });
+    }
+
     window.Tawk_API.onLoad = function onTawkLoad() {
         document.documentElement.classList.add('tawk-ready');
+
+        if (window.TAWK_HIDE_ATTENTION_GRABBER !== false) {
+            document.documentElement.classList.add('tawk-no-grabber');
+            hideTawkAttentionGrabber();
+            const grabberObserver = new MutationObserver(hideTawkAttentionGrabber);
+            grabberObserver.observe(document.body, { childList: true, subtree: true });
+            setTimeout(() => grabberObserver.disconnect(), 45000);
+        }
     };
 
     const s1 = document.createElement('script');

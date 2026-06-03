@@ -1424,8 +1424,18 @@ body.cursor-hover .cursor-follower { width: 52px; height: 52px; border-color: va
 .footer-heart { color: var(--gray-3); }
 
 /* ============================================
-   TAWK.TO — bottom-left (backup if dashboard uses right)
+   TAWK.TO — bottom-left + hide "We are here" attention grabber
 ============================================ */
+html.tawk-no-grabber .tawk-attention-grabber,
+html.tawk-no-grabber #tawk-attention-grabber,
+html.tawk-no-grabber [class*="attention-grabber"],
+html.tawk-no-grabber [id*="attention-grabber"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 html.tawk-ready iframe[title*="chat"],
 html.tawk-ready #tawk-bubble-container,
 html.tawk-ready .tawk-min-container,

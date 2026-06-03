@@ -15,9 +15,10 @@ window.RECAPTCHA_SITE_KEY = '6Ld5wfgsAAAAAJO4boml-dJjesZIhpdhGcqXDTeT';
 window.RECAPTCHA_ACTION = 'contact_submit';
 
 /* ---- tawk.to live chat (bottom-left on site) ---- */
-// https://tawk.to — also set Widget → Appearance → Position: Bottom Left in dashboard
+// Dashboard: Administration → Chat Widget → Attention Grabber → OFF (removes "We are here" + hands)
 window.TAWK_PROPERTY_ID = '6a1ff45ec45f451c2fc9c16d';
 window.TAWK_WIDGET_ID = '1jq6d557k';
 window.TAWK_POSITION = 'bl'; // bl = bottom-left | br = bottom-right
 window.TAWK_OFFSET_X = 20;
 window.TAWK_OFFSET_Y = 20;
+window.TAWK_HIDE_ATTENTION_GRABBER = true; // hide "WE ARE HERE" bubble + emoji hands
