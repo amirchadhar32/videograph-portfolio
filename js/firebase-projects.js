@@ -167,6 +167,18 @@ window.BrainCoreFirebase = (function () {
     return auth.onAuthStateChanged(cb);
   }
 
+  function isPermissionError(error) {
+    const code = error && error.code ? error.code : '';
+    const msg = error && error.message ? error.message : '';
+    return code === 'permission-denied'
+      || msg.toLowerCase().includes('insufficient permissions')
+      || msg.toLowerCase().includes('missing or insufficient permissions');
+  }
+
+  function permissionHelp() {
+    return 'Firestore permission denied. In Firebase Console → Firestore → Rules, paste firestore.rules from your project and click Publish. Then log in again on admin dashboard.';
+  }
+
   return {
     isConfigured,
     init,
@@ -179,6 +191,8 @@ window.BrainCoreFirebase = (function () {
     signIn,
     signOut,
     onAuthChange,
+    isPermissionError,
+    permissionHelp,
     DEFAULT_PROJECTS,
   };
 })();

@@ -1,8 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Portfolio projects
     match /projects/{projectId} {
-      allow read: if resource.data.published == true || request.auth != null;
+      // Anyone can read published projects; admin (logged in) can read all
+      allow read: if request.auth != null
+                  || resource.data.get('published', true) == true;
+
+      // Only logged-in admin can add, edit, delete
       allow create, update, delete: if request.auth != null;
     }
   }

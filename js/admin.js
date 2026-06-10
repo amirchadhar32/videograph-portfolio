@@ -212,7 +212,11 @@
           });
         });
       } catch (error) {
-        list.innerHTML = `<p class="admin-empty">${escape(error.message)}</p>`;
+        const msg = fb.isPermissionError(error)
+          ? `${fb.permissionHelp()}`
+          : escape(error.message);
+        list.innerHTML = `<p class="admin-empty">${msg}</p>`;
+        if (fb.isPermissionError(error)) showStatus(fb.permissionHelp(), 'error');
       }
     }
 
