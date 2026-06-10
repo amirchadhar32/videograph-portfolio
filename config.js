@@ -34,3 +34,4 @@ window.TAWK_HIDE_ATTENTION_GRABBER = true;
 /* ---- Projects ---- */
 window.PROJECTS_HOME_LIMIT = 6;
 window.PROJECTS_PAGE_SIZE = 9;
+window.AUTO_SEED_PROJECTS = true; // auto-import 6 projects when Firestore is empty (first dashboard visit)

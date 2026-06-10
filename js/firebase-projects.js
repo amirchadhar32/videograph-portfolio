@@ -85,22 +85,68 @@ window.BrainCoreFirebase = (function () {
     await projectsRef().doc(id).delete();
   }
 
-  async function seedDefaultProjects() {
+  async function seedDefaultProjects(options) {
     if (!init()) throw new Error('Firebase not configured');
-    const existing = await projectsRef().limit(1).get();
-    if (!existing.empty) return { seeded: false, message: 'Projects already exist.' };
+
+    const opts = options || {};
+    const merge = opts.merge !== false;
+    const snap = await projectsRef().get();
+    const existingByTitle = new Map();
+
+    snap.docs.forEach((doc) => {
+      const title = String(doc.data().title || '').trim().toLowerCase();
+      if (title) existingByTitle.set(title, doc.id);
+    });
+
+    if (!merge && !snap.empty) {
+      return { seeded: false, added: 0, skipped: snap.size, message: 'Projects already exist. Use merge import instead.' };
+    }
 
     const batch = db.batch();
+    let added = 0;
+    let skipped = 0;
+
     DEFAULT_PROJECTS.forEach((p) => {
+      const key = String(p.title || '').trim().toLowerCase();
+      if (merge && existingByTitle.has(key)) {
+        skipped += 1;
+        return;
+      }
+
       const ref = projectsRef().doc();
       batch.set(ref, {
         ...p,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
+      added += 1;
     });
+
+    if (added === 0) {
+      return {
+        seeded: false,
+        added: 0,
+        skipped,
+        message: skipped
+          ? `All ${DEFAULT_PROJECTS.length} portfolio projects are already in Firebase.`
+          : 'No projects to import.',
+      };
+    }
+
     await batch.commit();
-    return { seeded: true, message: 'Default projects imported.' };
+    return {
+      seeded: true,
+      added,
+      skipped,
+      message: `Imported ${added} project(s)${skipped ? ` (${skipped} already existed)` : ''}. Refresh your site to see them.`,
+    };
+  }
+
+  async function autoSeedIfEmpty() {
+    if (!init()) return null;
+    const snap = await projectsRef().limit(1).get();
+    if (!snap.empty) return null;
+    return seedDefaultProjects({ merge: true });
   }
 
   function signIn(email, password) {
@@ -129,6 +175,7 @@ window.BrainCoreFirebase = (function () {
     saveProject,
     deleteProject,
     seedDefaultProjects,
+    autoSeedIfEmpty,
     signIn,
     signOut,
     onAuthChange,

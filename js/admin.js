@@ -99,6 +99,16 @@
         return;
       }
       if (userEmail) userEmail.textContent = user.email;
+
+      if (window.AUTO_SEED_PROJECTS !== false) {
+        try {
+          const auto = await fb.autoSeedIfEmpty();
+          if (auto && auto.seeded) showStatus(auto.message, 'success');
+        } catch (error) {
+          console.warn('Auto-seed:', error);
+        }
+      }
+
       await loadProjects();
     });
 
@@ -112,7 +122,7 @@
     if (seedBtn) {
       seedBtn.addEventListener('click', async () => {
         try {
-          const res = await fb.seedDefaultProjects();
+          const res = await fb.seedDefaultProjects({ merge: true });
           showStatus(res.message, res.seeded ? 'success' : 'info');
           await loadProjects();
         } catch (error) {
