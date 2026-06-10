@@ -2,6 +2,23 @@
  * BrainCore Solutions — site configuration (edit this file only)
  */
 
+/* ---- SEO (Google, social sharing, analytics) ---- */
+// Set siteUrl to your live domain (e.g. https://braincoresolutions.com or your Netlify URL)
+window.SEO_CONFIG = {
+  siteUrl: 'https://braincoredev.netlify.app',
+  siteName: 'BrainCore Solutions',
+  tagline: 'Full Stack Dev Agency',
+  defaultDescription:
+    'BrainCore Solutions — A small, sharp full-stack development team building modern web applications, CRMs, and digital products.',
+  ogImage: '/assets/chatbot-robot-static.png',
+  twitterHandle: '', // e.g. '@braincore' (optional)
+  googleSiteVerification: 'dKxyvvEx-zydfO9lUF_-iKuqhgnxfQVCSxDrjlAvp18',
+  locale: 'en_US',
+  ga4MeasurementId: 'G-MDB6VBLVLK',
+  contactEmail: 'braincore.solutions.dev@gmail.com',
+  linkedInUrl: 'https://www.linkedin.com/in/braincore',
+};
+
 /* ---- Firebase (projects + admin) ---- */
 // https://console.firebase.google.com → Project settings → Your apps → Web app
 window.FIREBASE_CONFIG = {
