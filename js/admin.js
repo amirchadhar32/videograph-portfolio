@@ -78,15 +78,128 @@
     const seedBtn = document.getElementById('seedProjectsBtn');
     const cancelBtn = document.getElementById('cancelEditBtn');
     const cfgNote = document.getElementById('firebaseConfigNote');
+    const modal = document.getElementById('projectModal');
+    const modalBackdrop = document.getElementById('projectModalBackdrop');
+    const modalCard = document.getElementById('projectModalCard');
+    const closeModalBtn = document.getElementById('closeProjectModal');
+    const openModalBtns = [
+      document.getElementById('openProjectModalBtn'),
+      document.getElementById('openProjectModalBtn2'),
+    ].filter(Boolean);
+    const panelNavBtns = document.querySelectorAll('[data-panel-nav]');
+    const panels = {
+      dashboard: document.getElementById('panel-dashboard'),
+      add: document.getElementById('panel-add'),
+      projects: document.getElementById('panel-projects'),
+    };
 
     let editingId = null;
+    let activePanel = 'dashboard';
 
     function showStatus(msg, type) {
       if (!status) return;
       status.hidden = false;
       status.textContent = msg;
-      status.className = 'admin-status' + (type ? ` is-${type}` : '');
+      const base = 'rounded-xl px-4 py-3 text-sm font-semibold border';
+      if (type === 'success') status.className = `${base} bg-emerald-500/10 text-emerald-400 border-emerald-500/30`;
+      else if (type === 'error') status.className = `${base} bg-red-500/10 text-red-400 border-red-500/30`;
+      else status.className = `${base} bg-white/5 text-white/60 border-white/10`;
     }
+
+    function updateStats(projects) {
+      const totalEl = document.getElementById('statTotalProjects');
+      const pubEl = document.getElementById('statPublishedProjects');
+      const total = projects ? projects.length : 0;
+      const published = projects ? projects.filter((p) => p.published !== false).length : 0;
+      if (totalEl) totalEl.textContent = String(total);
+      if (pubEl) pubEl.textContent = String(published);
+    }
+
+    function setActiveNav(panel) {
+      panelNavBtns.forEach((btn) => {
+        const isActive = btn.dataset.panelNav === panel;
+        btn.classList.toggle('bg-brand/15', isActive);
+        btn.classList.toggle('text-brand', isActive);
+        btn.classList.toggle('font-semibold', isActive);
+        btn.classList.toggle('border', isActive);
+        btn.classList.toggle('border-brand/25', isActive);
+        btn.classList.toggle('text-white/60', !isActive);
+        btn.classList.toggle('font-medium', !isActive);
+      });
+    }
+
+    function showPanel(panel) {
+      activePanel = panel;
+      Object.entries(panels).forEach(([key, el]) => {
+        if (el) el.classList.toggle('hidden', key !== panel);
+      });
+      setActiveNav(panel);
+    }
+
+    function resetForm() {
+      editingId = null;
+      if (form) {
+        form.reset();
+        form.published.checked = true;
+        form.c1.value = '#FF6B2B';
+        form.c2.value = '#1a0a00';
+        form.order.value = '0';
+      }
+      const titleEl = document.getElementById('projectFormTitle');
+      if (titleEl) titleEl.textContent = 'Create Project';
+      if (cancelBtn) cancelBtn.hidden = true;
+    }
+
+    function openProjectModal() {
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        if (modalBackdrop) modalBackdrop.classList.replace('opacity-0', 'opacity-100');
+        if (modalCard) {
+          modalCard.classList.replace('scale-95', 'scale-100');
+          modalCard.classList.replace('opacity-0', 'opacity-100');
+        }
+      });
+      const firstInput = form && form.querySelector('input, textarea');
+      if (firstInput) setTimeout(() => firstInput.focus(), 200);
+    }
+
+    function closeProjectModal() {
+      if (!modal) return;
+      if (modalBackdrop) modalBackdrop.classList.replace('opacity-100', 'opacity-0');
+      if (modalCard) {
+        modalCard.classList.replace('scale-100', 'scale-95');
+        modalCard.classList.replace('opacity-100', 'opacity-0');
+      }
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        resetForm();
+      }, 280);
+    }
+
+    panelNavBtns.forEach((btn) => {
+      btn.addEventListener('click', () => showPanel(btn.dataset.panelNav));
+    });
+
+    openModalBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        resetForm();
+        openProjectModal();
+      });
+    });
+
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeProjectModal);
+    if (modalBackdrop) modalBackdrop.addEventListener('click', closeProjectModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+        closeProjectModal();
+      }
+    });
 
     if (!fb.isConfigured()) {
       if (cfgNote) cfgNote.hidden = false;
@@ -132,12 +245,7 @@
     }
 
     if (cancelBtn) {
-      cancelBtn.addEventListener('click', () => {
-        editingId = null;
-        if (form) form.reset();
-        document.getElementById('projectFormTitle').textContent = 'Add project';
-        cancelBtn.hidden = true;
-      });
+      cancelBtn.addEventListener('click', closeProjectModal);
     }
 
     if (form) {
@@ -159,11 +267,8 @@
           }, editingId);
 
           showStatus(editingId ? 'Project updated.' : 'Project added.', 'success');
-          editingId = null;
-          form.reset();
-          form.published.checked = true;
-          document.getElementById('projectFormTitle').textContent = 'Add project';
-          if (cancelBtn) cancelBtn.hidden = true;
+          closeProjectModal();
+          showPanel('projects');
           await loadProjects();
         } catch (error) {
           showStatus(error.message, 'error');
@@ -173,30 +278,72 @@
 
     async function loadProjects() {
       if (!list) return;
-      list.innerHTML = '<p class="admin-loading">Loading...</p>';
+      list.innerHTML = '<p class="text-white/40 text-sm py-6 text-center">Loading...</p>';
 
       try {
         const projects = await fb.getAllProjectsAdmin();
+        updateStats(projects);
+
         if (!projects.length) {
-          list.innerHTML = '<p class="admin-empty">No projects yet. Add one or import defaults.</p>';
+          list.innerHTML = '<p class="text-white/40 text-sm py-6 text-center">No projects yet. Add one or click Import above.</p>';
           return;
         }
 
-        list.innerHTML = projects.map((p) => `
-          <div class="admin-project-row" data-id="${p.id}">
-            <div class="admin-project-main">
-              <strong>${escape(p.title)}</strong>
-              <span>${p.published ? 'Published' : 'Draft'}${p.featured ? ' · Featured' : ''} · Order ${p.order || 0}</span>
+        list.innerHTML = projects.map((p) => {
+          const isPublished = p.published !== false;
+          const publishCheck = !isPublished ? `
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 cursor-pointer shrink-0">
+              <input type="checkbox" data-publish="${p.id}" class="w-4 h-4 rounded border-white/20 bg-white/5 text-brand focus:ring-brand cursor-pointer" />
+              <span class="text-xs font-semibold text-amber-300">Publish</span>
+            </label>
+          ` : '';
+
+          return `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/10 hover:border-brand/30 transition" data-id="${p.id}">
+            <div class="min-w-0">
+              <strong class="block text-white font-semibold truncate">${escape(p.title)}</strong>
+              <span class="text-xs text-white/40 mt-1 block">${isPublished ? 'Published' : 'Draft'}${p.featured ? ' · Featured' : ''} · Order ${p.order || 0}</span>
             </div>
-            <div class="admin-project-actions">
-              <button type="button" class="admin-btn-sm" data-edit="${p.id}">Edit</button>
-              <button type="button" class="admin-btn-sm is-danger" data-delete="${p.id}">Delete</button>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              ${publishCheck}
+              <button type="button" data-edit="${p.id}" class="px-3 py-1.5 rounded-lg border border-white/15 text-xs font-semibold text-white/80 hover:border-brand hover:text-brand transition">Edit</button>
+              <button type="button" data-delete="${p.id}" class="px-3 py-1.5 rounded-lg border border-red-500/30 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition">Delete</button>
             </div>
           </div>
-        `).join('');
+        `;
+        }).join('');
 
         list.querySelectorAll('[data-edit]').forEach((btn) => {
           btn.addEventListener('click', () => fillForm(projects.find((x) => x.id === btn.dataset.edit)));
+        });
+
+        list.querySelectorAll('[data-publish]').forEach((checkbox) => {
+          checkbox.addEventListener('change', async () => {
+            if (!checkbox.checked) return;
+            const project = projects.find((x) => x.id === checkbox.dataset.publish);
+            if (!project) return;
+
+            checkbox.disabled = true;
+            try {
+              await fb.saveProject({
+                title: project.title,
+                description: project.description,
+                tags: project.tags || [],
+                c1: project.c1,
+                c2: project.c2,
+                url: project.url,
+                order: project.order,
+                featured: project.featured,
+                published: true,
+              }, project.id);
+              showStatus(`"${project.title}" is now published.`, 'success');
+              await loadProjects();
+            } catch (error) {
+              checkbox.checked = false;
+              checkbox.disabled = false;
+              showStatus(error.message, 'error');
+            }
+          });
         });
 
         list.querySelectorAll('[data-delete]').forEach((btn) => {
@@ -215,7 +362,8 @@
         const msg = fb.isPermissionError(error)
           ? `${fb.permissionHelp()}`
           : escape(error.message);
-        list.innerHTML = `<p class="admin-empty">${msg}</p>`;
+        list.innerHTML = `<p class="text-red-400/80 text-sm py-6 text-center leading-relaxed">${msg}</p>`;
+        updateStats([]);
         if (fb.isPermissionError(error)) showStatus(fb.permissionHelp(), 'error');
       }
     }
@@ -232,9 +380,9 @@
       form.order.value = project.order || 0;
       form.featured.checked = Boolean(project.featured);
       form.published.checked = project.published !== false;
-      document.getElementById('projectFormTitle').textContent = 'Edit project';
+      document.getElementById('projectFormTitle').textContent = 'Edit Project';
       if (cancelBtn) cancelBtn.hidden = false;
-      form.scrollIntoView({ behavior: 'smooth' });
+      openProjectModal();
     }
 
     function escape(s) {

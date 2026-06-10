@@ -1,84 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Projects Dashboard — BrainCore</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../styles.css" />
-  <link rel="stylesheet" href="admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#FF6B2B', dark: '#e85a1f', soft: '#ff8c55', dim: 'rgba(255,107,43,0.12)' },
+            page: '#0a0a0f',
+            surface: { DEFAULT: '#0f0f18', light: '#141420', card: '#151520' },
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            glow: '0 0 40px rgba(255,107,43,0.25)',
+          },
+        },
+      },
+    };
+  </script>
   <script src="../config.js"></script>
 </head>
-<body class="admin-page">
-  <div class="admin-wrap">
-    <a href="../index.html" class="admin-back">← Back to website</a>
+<body class="h-full bg-page text-white font-sans antialiased">
 
-    <div class="admin-head">
-      <h1>Projects <span class="gradient-text">Dashboard</span></h1>
-      <div class="admin-user">
-        <span id="adminUserEmail"></span>
-        <button type="button" class="btn btn-outline" id="adminLogout">Logout</button>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="hidden lg:flex w-64 flex-col bg-surface border-r border-white/10 shrink-0">
+      <div class="p-6 border-b border-white/10">
+        <a href="../index.html" class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center shadow-glow">
+            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </span>
+          <div>
+            <span class="block font-bold text-lg leading-tight">BrainCore</span>
+            <span class="block text-xs text-white/40">Admin Panel</span>
+          </div>
+        </a>
       </div>
-    </div>
 
-    <div class="admin-note" id="firebaseConfigNote" hidden>
-      Add your <strong>FIREBASE_CONFIG</strong> in <code>config.js</code> to enable saving projects.
-    </div>
-    <p class="admin-status" id="adminStatus" hidden></p>
+      <nav class="flex-1 p-4 space-y-1" id="adminSidebarNav">
+        <button type="button" data-panel-nav="dashboard" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-brand/15 text-brand font-semibold text-sm border border-brand/25">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          Dashboard
+        </button>
+        <button type="button" data-panel-nav="add" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 font-medium text-sm transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          Add Project
+        </button>
+        <button type="button" data-panel-nav="projects" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 font-medium text-sm transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          All Projects
+        </button>
+        <a href="../projects.html" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 font-medium text-sm transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          View Website
+        </a>
+      </nav>
 
-    <div class="admin-grid">
-      <section class="admin-panel">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
-          <h2 id="projectFormTitle" style="font-family:var(--font-display);font-size:22px;">Add project</h2>
-          <button type="button" class="admin-btn-sm" id="seedProjectsBtn">Import all 6 portfolio projects</button>
+      <div class="p-4 border-t border-white/10">
+        <button type="button" id="adminLogout" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-brand/40 hover:bg-brand/10 text-sm font-semibold transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Top bar -->
+      <header class="h-16 flex items-center justify-between px-4 lg:px-8 bg-surface border-b border-white/10 shrink-0">
+        <div class="flex items-center gap-3 lg:hidden">
+          <span class="w-9 h-9 rounded-lg bg-brand flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+          </span>
+          <span class="font-bold">BrainCore Admin</span>
+        </div>
+        <h1 class="hidden lg:block text-lg font-bold text-white/90">Projects Dashboard</h1>
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-white/50 hidden sm:block">Admin</span>
+          <span id="adminUserEmail" class="text-sm font-semibold text-brand-soft max-w-[180px] truncate"></span>
+          <button type="button" id="adminLogoutMobile" class="lg:hidden px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-white/70">Logout</button>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
+
+        <div id="firebaseConfigNote" hidden class="rounded-xl border border-amber-400/30 bg-amber-400/10 text-amber-200 text-sm p-4">
+          Add your <strong>FIREBASE_CONFIG</strong> in <code class="text-brand-soft">config.js</code> to enable saving projects.
         </div>
 
-        <form id="projectForm" class="admin-form">
-          <div class="fg">
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title" required />
-          </div>
-          <div class="fg">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" rows="4" required></textarea>
-          </div>
-          <div class="fg">
-            <label for="tags">Tags (comma separated)</label>
-            <input type="text" id="tags" name="tags" placeholder="Laravel, Vue.js, Stripe" />
-          </div>
-          <div class="admin-form-row">
-            <div class="fg">
-              <label for="c1">Color 1</label>
-              <input type="text" id="c1" name="c1" value="#FF6B2B" />
+        <p id="adminStatus" hidden class="rounded-xl px-4 py-3 text-sm font-semibold border"></p>
+
+        <!-- Dashboard: stats only -->
+        <section id="panel-dashboard" class="admin-panel-view">
+          <h2 class="text-2xl font-bold mb-1">Dashboard</h2>
+          <p class="text-white/45 text-sm mb-6">Overview of your portfolio projects.</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <!-- Stat card 1 -->
+            <div class="rounded-2xl overflow-hidden shadow-lg border border-white/5">
+              <div class="relative bg-gradient-to-br from-brand to-[#ff3cac] p-6 min-h-[120px]">
+                <div class="relative z-10">
+                  <p id="statTotalProjects" class="text-5xl font-extrabold leading-none">0</p>
+                  <p class="text-white/90 font-semibold mt-2">Total Projects</p>
+                </div>
+                <svg class="absolute right-4 bottom-4 w-20 h-20 text-white/15" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v12H4V6zm2 2v8h12V8H6z"/></svg>
+              </div>
+              <button type="button" data-panel-nav="projects" class="w-full flex items-center justify-between px-5 py-3 bg-brand-dark/80 text-sm font-semibold hover:bg-brand-dark transition text-left">
+                <span>More Info</span>
+                <span>→</span>
+              </button>
             </div>
-            <div class="fg">
-              <label for="c2">Color 2</label>
-              <input type="text" id="c2" name="c2" value="#1a0a00" />
+
+            <!-- Stat card 2 -->
+            <div class="rounded-2xl overflow-hidden shadow-lg border border-white/5">
+              <div class="relative bg-gradient-to-br from-[#7B5EA7] to-[#3B82F6] p-6 min-h-[120px]">
+                <div class="relative z-10">
+                  <p id="statPublishedProjects" class="text-5xl font-extrabold leading-none">0</p>
+                  <p class="text-white/90 font-semibold mt-2">Published</p>
+                </div>
+                <svg class="absolute right-4 bottom-4 w-20 h-20 text-white/15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 0114 0H5z"/></svg>
+              </div>
+              <a href="../projects.html" target="_blank" class="flex items-center justify-between px-5 py-3 bg-[#5a4490] text-sm font-semibold hover:bg-[#4a3878] transition">
+                <span>View on site</span>
+                <span>→</span>
+              </a>
             </div>
           </div>
-          <div class="fg">
-            <label for="url">Project URL (optional)</label>
-            <input type="url" id="url" name="url" placeholder="https://..." />
+
+          <button type="button" id="seedProjectsBtn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-white/80 hover:border-brand/40 hover:text-brand transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            Import all 6 portfolio projects
+          </button>
+        </section>
+
+        <!-- Add Project: button only → opens popup -->
+        <section id="panel-add" class="admin-panel-view hidden">
+          <h2 class="text-2xl font-bold mb-1">Add Project</h2>
+          <p class="text-white/45 text-sm mb-8">Create a new portfolio project for your website.</p>
+
+          <div class="flex flex-col items-center justify-center py-16 rounded-2xl bg-surface-card border border-dashed border-white/15">
+            <div class="w-16 h-16 rounded-2xl bg-brand/15 border border-brand/30 flex items-center justify-center mb-5">
+              <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+            <p class="text-white/50 text-sm mb-6 text-center max-w-sm">Click below to open the project form and add details.</p>
+            <button type="button" id="openProjectModalBtn" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-brand hover:bg-brand-soft text-white font-bold text-sm shadow-glow transition hover:-translate-y-0.5">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              Add Project
+            </button>
           </div>
-          <div class="fg">
-            <label for="order">Sort order</label>
-            <input type="number" id="order" name="order" value="0" min="0" />
+        </section>
+
+        <!-- All Projects list -->
+        <section id="panel-projects" class="admin-panel-view hidden">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <h2 class="text-2xl font-bold">All Projects</h2>
+            <button type="button" id="openProjectModalBtn2" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand/15 border border-brand/30 text-brand text-sm font-semibold hover:bg-brand/25 transition">
+              + Add Project
+            </button>
           </div>
-          <div class="admin-checks">
-            <label><input type="checkbox" name="featured" /> Featured (large card)</label>
-            <label><input type="checkbox" name="published" checked /> Published</label>
+          <div id="adminProjectsList" class="space-y-3 rounded-2xl bg-surface-card border border-white/10 p-4 min-h-[120px]">
+            <p class="text-white/40 text-sm py-4 text-center">Loading...</p>
           </div>
-          <div class="admin-form-actions">
-            <button type="submit" class="btn btn-primary">Save project</button>
-            <button type="button" class="btn btn-outline" id="cancelEditBtn" hidden>Cancel edit</button>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Project popup modal -->
+  <div id="projectModal" class="fixed inset-0 z-[100] hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="projectFormTitle">
+    <div id="projectModalBackdrop" class="absolute inset-0 bg-black/75 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 overflow-y-auto">
+      <div id="projectModalCard" class="relative w-full max-w-2xl rounded-2xl bg-surface-card border border-white/10 shadow-2xl p-6 sm:p-8 my-8 scale-95 opacity-0 transition-all duration-300">
+        <button type="button" id="closeProjectModal" class="absolute top-4 right-4 w-9 h-9 rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-brand/40 flex items-center justify-center transition" aria-label="Close">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+
+        <h2 id="projectFormTitle" class="text-xl font-bold text-center mb-6 pr-8">Create Project</h2>
+
+        <form id="projectForm" class="space-y-5">
+          <div>
+            <label for="title" class="block text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Project Title</label>
+            <input type="text" id="title" name="title" required class="w-full bg-transparent border-0 border-b border-white/20 focus:border-brand focus:ring-0 px-0 py-2 text-white placeholder-white/30 outline-none transition" placeholder="e.g. Reguease" />
+          </div>
+          <div>
+            <label for="description" class="block text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Description</label>
+            <textarea id="description" name="description" rows="3" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-brand focus:ring-1 focus:ring-brand outline-none transition resize-y" placeholder="Short project description..."></textarea>
+          </div>
+          <div>
+            <label for="tags" class="block text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Tags (comma separated)</label>
+            <input type="text" id="tags" name="tags" placeholder="Laravel, Vue.js, Stripe" class="w-full bg-transparent border-0 border-b border-white/20 focus:border-brand focus:ring-0 px-0 py-2 text-white placeholder-white/30 outline-none transition" />
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="c1" class="block text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Color 1</label>
+              <input type="text" id="c1" name="c1" value="#FF6B2B" class="w-full bg-transparent border-0 border-b border-white/20 focus:border-brand px-0 py-2 text-white outline-none" />
+            </div>
+            <div>
+              <label for="c2" class="block text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Color 2</label>
+              <input type="text" id="c2" name="c2" value="#1a0a00" class="w-full bg-transparent border-0 border-b border-white/20 focus:border-brand px-0 py-2 text-white outline-none" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="url" class="block text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Project URL</label>
+              <input type="url" id="url" name="url" placeholder="https://..." class="w-full bg-transparent border-0 border-b border-white/20 focus:border-brand px-0 py-2 text-white placeholder-white/30 outline-none" />
+            </div>
+            <div>
+              <label for="order" class="block text-xs font-bold uppercase tracking-wider text-white/40 mb-2">Sort Order</label>
+              <input type="number" id="order" name="order" value="0" min="0" class="w-full bg-transparent border-0 border-b border-white/20 focus:border-brand px-0 py-2 text-white outline-none" />
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-6 pt-2">
+            <label class="flex items-center gap-2 text-sm text-white/70 cursor-pointer">
+              <input type="checkbox" name="featured" class="w-4 h-4 rounded border-white/20 bg-white/5 text-brand focus:ring-brand" />
+              Featured (large card)
+            </label>
+            <label class="flex items-center gap-2 text-sm text-white/70 cursor-pointer">
+              <input type="checkbox" name="published" checked class="w-4 h-4 rounded border-white/20 bg-white/5 text-brand focus:ring-brand" />
+              Published on website
+            </label>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
+            <button type="submit" class="px-10 py-3 rounded-full bg-brand hover:bg-brand-soft text-white font-bold text-sm shadow-glow transition hover:-translate-y-0.5">
+              Submit
+            </button>
+            <button type="button" id="cancelEditBtn" hidden class="px-6 py-3 rounded-full border border-white/15 text-white/70 hover:text-white text-sm font-semibold transition">
+              Cancel
+            </button>
           </div>
         </form>
-      </section>
-
-      <section class="admin-panel">
-        <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:18px;">Your projects</h2>
-        <div class="admin-list" id="adminProjectsList"></div>
-      </section>
+      </div>
     </div>
   </div>
 
@@ -87,5 +247,10 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <script src="../js/firebase-projects.js"></script>
   <script src="../js/admin.js"></script>
+  <script>
+    document.getElementById('adminLogoutMobile')?.addEventListener('click', () => {
+      document.getElementById('adminLogout')?.click();
+    });
+  </script>
 </body>
 </html>
