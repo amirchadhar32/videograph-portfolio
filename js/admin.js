@@ -14,6 +14,24 @@
     initDashboard();
   }
 
+  function formatAuthError(error) {
+    const code = error && error.code ? error.code : '';
+    const map = {
+      'auth/configuration-not-found':
+        'Email/Password login is not enabled in Firebase. Open Firebase Console → Authentication → Sign-in method → enable Email/Password, then try again.',
+      'auth/invalid-credential':
+        'Wrong email or password. If you have no user yet, add one in Firebase → Authentication → Users.',
+      'auth/user-not-found':
+        'No account with this email. Create admin user in Firebase → Authentication → Users → Add user.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/invalid-email': 'Invalid email address.',
+      'auth/too-many-requests': 'Too many attempts. Wait a few minutes and try again.',
+      'auth/network-request-failed': 'Network error. Check your internet connection.',
+    };
+    if (map[code]) return map[code];
+    return (error && error.message) || 'Login failed. Check email and password.';
+  }
+
   function initLogin() {
     const form = document.getElementById('adminLoginForm');
     const err = document.getElementById('adminLoginError');
@@ -44,7 +62,7 @@
       } catch (error) {
         if (err) {
           err.hidden = false;
-          err.textContent = error.message || 'Login failed. Check email and password.';
+          err.textContent = formatAuthError(error);
         }
       }
     });

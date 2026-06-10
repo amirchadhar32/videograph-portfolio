@@ -25,7 +25,17 @@
       <p style="color:var(--gray-2);margin-bottom:24px;font-size:14px;">Manage portfolio projects from your dashboard.</p>
 
       <div class="admin-note" id="firebaseConfigNote" hidden>
-        Add your <strong>FIREBASE_CONFIG</strong> in <code>config.js</code>, then create an admin user in Firebase Authentication (Email/Password).
+        Add your <strong>FIREBASE_CONFIG</strong> in <code>config.js</code>, then complete Firebase setup below.
+      </div>
+
+      <div class="admin-note admin-setup-help">
+        <strong>First-time Firebase setup (fixes auth/configuration-not-found):</strong>
+        <ol style="margin:10px 0 0 18px;line-height:1.7;">
+          <li>Open <a href="https://console.firebase.google.com/project/braincore-8ae0b/authentication/providers" target="_blank" rel="noopener noreferrer" style="color:#ffb088;">Firebase → Authentication → Sign-in method</a></li>
+          <li>Click <strong>Email/Password</strong> → turn <strong>Enable</strong> ON → Save</li>
+          <li>Go to <strong>Users</strong> tab → <strong>Add user</strong> (your admin email + password)</li>
+          <li>Authentication → <strong>Settings</strong> → <strong>Authorized domains</strong> → add your site (e.g. <code>localhost</code>, <code>braincoredev.netlify.app</code>)</li>
+        </ol>
       </div>
 
       <form id="adminLoginForm" class="admin-form">
