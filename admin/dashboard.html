@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects Dashboard — BrainCore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="../config.js"></script>
+</head>
+<body class="admin-page">
+  <div class="admin-wrap">
+    <a href="../index.html" class="admin-back">← Back to website</a>
+
+    <div class="admin-head">
+      <h1>Projects <span class="gradient-text">Dashboard</span></h1>
+      <div class="admin-user">
+        <span id="adminUserEmail"></span>
+        <button type="button" class="btn btn-outline" id="adminLogout">Logout</button>
+      </div>
+    </div>
+
+    <div class="admin-note" id="firebaseConfigNote" hidden>
+      Add your <strong>FIREBASE_CONFIG</strong> in <code>config.js</code> to enable saving projects.
+    </div>
+
+    <p class="admin-status" id="adminStatus" hidden></p>
+
+    <div class="admin-grid">
+      <section class="admin-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+          <h2 id="projectFormTitle" style="font-family:var(--font-display);font-size:22px;">Add project</h2>
+          <button type="button" class="admin-btn-sm" id="seedProjectsBtn">Import default projects</button>
+        </div>
+
+        <form id="projectForm" class="admin-form">
+          <div class="fg">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </div>
+          <div class="fg">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+          </div>
+          <div class="fg">
+            <label for="tags">Tags (comma separated)</label>
+            <input type="text" id="tags" name="tags" placeholder="Laravel, Vue.js, Stripe" />
+          </div>
+          <div class="admin-form-row">
+            <div class="fg">
+              <label for="c1">Color 1</label>
+              <input type="text" id="c1" name="c1" value="#FF6B2B" />
+            </div>
+            <div class="fg">
+              <label for="c2">Color 2</label>
+              <input type="text" id="c2" name="c2" value="#1a0a00" />
+            </div>
+          </div>
+          <div class="fg">
+            <label for="url">Project URL (optional)</label>
+            <input type="url" id="url" name="url" placeholder="https://..." />
+          </div>
+          <div class="fg">
+            <label for="order">Sort order</label>
+            <input type="number" id="order" name="order" value="0" min="0" />
+          </div>
+          <div class="admin-checks">
+            <label><input type="checkbox" name="featured" /> Featured (large card)</label>
+            <label><input type="checkbox" name="published" checked /> Published</label>
+          </div>
+          <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">Save project</button>
+            <button type="button" class="btn btn-outline" id="cancelEditBtn" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-panel">
+        <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:18px;">Your projects</h2>
+        <div class="admin-list" id="adminProjectsList"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-projects.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

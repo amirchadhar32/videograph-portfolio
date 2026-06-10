@@ -378,104 +378,16 @@
                 <p class="section-sub">Real products shipped for real clients — built to perform.</p>
             </div>
 
-            <div class="projects-grid">
-                <div class="proj-card large reveal" data-delay="0">
-                    <div class="proj-bg" style="--c1:#FF6B2B;--c2:#1a0a00"></div>
-                    <div class="proj-content">
-                        <div class="proj-top">
-                            <span class="proj-num">01</span>
-                            <div class="proj-tags"><span>Laravel</span><span>Vue.js</span><span>ChatGPT API</span></div>
-                        </div>
-                        <h3>Reguease</h3>
-                        <p>AI-powered regulatory compliance platform with intelligent document processing and real-time
-                            compliance tracking.</p>
-                        <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M7 17L17 7M7 7h10v10" />
-                            </svg></div>
-                    </div>
-                </div>
+            <div class="projects-grid" id="homeProjectsGrid">
+                <div class="projects-loading">Loading projects...</div>
+            </div>
 
-                <div class="proj-card reveal" data-delay="100">
-                    <div class="proj-bg" style="--c1:#2B7FFF;--c2:#000a1a"></div>
-                    <div class="proj-content">
-                        <div class="proj-top">
-                            <span class="proj-num">02</span>
-                            <div class="proj-tags"><span>Laravel</span><span>Stripe</span></div>
-                        </div>
-                        <h3>SenderAustralia</h3>
-                        <p>Shipping & logistics platform with real-time courier rates and Stripe payments.</p>
-                        <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M7 17L17 7M7 7h10v10" />
-                            </svg></div>
-                    </div>
-                </div>
-
-                <div class="proj-card reveal" data-delay="200">
-                    <div class="proj-bg" style="--c1:#8B2BFF;--c2:#0a0014"></div>
-                    <div class="proj-content">
-                        <div class="proj-top">
-                            <span class="proj-num">03</span>
-                            <div class="proj-tags"><span>Python</span><span>Nuxt.js</span></div>
-                        </div>
-                        <h3>Clyvion</h3>
-                        <p>Modern SaaS platform with Python backend and Nuxt.js frontend on PostgreSQL.</p>
-                        <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M7 17L17 7M7 7h10v10" />
-                            </svg></div>
-                    </div>
-                </div>
-
-                <div class="proj-card reveal" data-delay="100">
-                    <div class="proj-bg" style="--c1:#FF2B6B;--c2:#1a0010"></div>
-                    <div class="proj-content">
-                        <div class="proj-top">
-                            <span class="proj-num">04</span>
-                            <div class="proj-tags"><span>PHP</span><span>Stripe</span><span>PayPal</span></div>
-                        </div>
-                        <h3>ArtTicketing</h3>
-                        <p>Event ticketing for art exhibitions with dual payment gateways and QR codes.</p>
-                        <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M7 17L17 7M7 7h10v10" />
-                            </svg></div>
-                    </div>
-                </div>
-
-                <div class="proj-card large reveal" data-delay="200">
-                    <div class="proj-bg" style="--c1:#2BFF8B;--c2:#001a0a"></div>
-                    <div class="proj-content">
-                        <div class="proj-top">
-                            <span class="proj-num">05</span>
-                            <div class="proj-tags"><span>PHP</span><span>jQuery</span><span>ERP</span></div>
-                        </div>
-                        <h3>Lock8 Equipment ERP</h3>
-                        <p>Enterprise resource planning for equipment management with inventory tracking, maintenance
-                            scheduling, and third-party API integrations.</p>
-                        <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M7 17L17 7M7 7h10v10" />
-                            </svg></div>
-                    </div>
-                </div>
-
-                <div class="proj-card reveal" data-delay="300">
-                    <div class="proj-bg" style="--c1:#FFB02B;--c2:#1a0e00"></div>
-                    <div class="proj-content">
-                        <div class="proj-top">
-                            <span class="proj-num">06</span>
-                            <div class="proj-tags"><span>Node.js</span><span>React</span></div>
-                        </div>
-                        <h3>ISO Platform</h3>
-                        <p>Modern web platform with real-time features and optimized API performance.</p>
-                        <div class="proj-link">View Project <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M7 17L17 7M7 7h10v10" />
-                            </svg></div>
-                    </div>
-                </div>
+            <div class="projects-actions reveal" data-delay="200">
+                <a href="projects.html" class="btn btn-primary magnetic">
+                    <span>View all projects</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <div class="btn-glow"></div>
+                </a>
             </div>
         </div>
     </section>
@@ -1584,6 +1496,12 @@
         </div>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-projects.js"></script>
+    <script src="js/projects-render.js"></script>
+    <script src="js/projects-home.js"></script>
     <script src="script.js"></script>
     <!--Start of Tawk.to Script-->
 <script type="text/javascript">

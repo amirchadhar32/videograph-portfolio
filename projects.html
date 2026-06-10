@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Projects — BrainCore Solutions</title>
+  <meta name="description" content="All portfolio projects by BrainCore Solutions." />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <nav class="nav scrolled" style="position:relative;">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </span>
+      <span class="logo-text">BrainCore<span class="logo-dot">.</span></span>
+    </a>
+    <a href="index.html#contact" class="nav-cta"><span>Let's Talk</span></a>
+  </nav>
+
+  <section class="work projects-page" style="padding-top:120px;">
+    <div class="container">
+      <div class="section-header reveal visible">
+        <span class="section-tag">Portfolio</span>
+        <h1 class="section-title">All <span class="gradient-text">Projects</span></h1>
+        <p class="section-sub" id="projectsCount">Loading projects...</p>
+      </div>
+
+      <div class="projects-grid" id="allProjectsGrid"></div>
+
+      <nav class="projects-pagination" id="projectsPagination" aria-label="Projects pagination"></nav>
+
+      <div class="projects-actions" style="margin-top:32px;">
+        <a href="index.html#work" class="btn btn-outline">← Back to home</a>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-projects.js"></script>
+  <script src="js/projects-render.js"></script>
+  <script src="js/projects-all.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
