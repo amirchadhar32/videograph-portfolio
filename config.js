@@ -54,8 +54,8 @@ window.TAWK_HIDE_ATTENTION_GRABBER = true;
 // 3. Signing mode: Unsigned → Save
 // 4. Copy Cloud name (Dashboard home) + preset name below
 window.CLOUDINARY_CONFIG = {
-  cloudName: '', // e.g. 'dxyzabc123'
-  uploadPreset: '', // e.g. 'braincore_unsigned'
+  cloudName: 'ddqykfuxo',
+  uploadPreset: 'braincore_unsigned', // Cloudinary → Settings → Upload → Unsigned preset (same name)
   folder: 'braincore-projects',
 };
 
