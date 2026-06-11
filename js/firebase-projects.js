@@ -58,10 +58,72 @@ window.BrainCoreFirebase = (function () {
     }
   }
 
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || '');
+        const base64 = result.includes(',') ? result.split(',')[1] : result;
+        resolve(base64);
+      };
+      reader.onerror = () => reject(new Error('Could not read image file.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function formatStorageError(error) {
+    const code = error && error.code ? error.code : '';
+    const msg = (error && error.message) || 'Upload failed';
+    if (msg.includes('CORS') || code === 'storage/unauthorized') {
+      return 'Image upload blocked. Enable Firebase Storage, publish storage.rules, add braincoredev.netlify.app to Firebase Auth → Authorized domains, and set FIREBASE_SERVICE_ACCOUNT on Netlify (see admin notes).';
+    }
+    return msg;
+  }
+
+  async function apiUploadImage(file, projectId, method, extra) {
+    if (!auth || !auth.currentUser) {
+      throw new Error('Please log in again before uploading images.');
+    }
+    const idToken = await auth.currentUser.getIdToken(true);
+    const payload = extra || {};
+
+    if (method === 'POST') {
+      payload.projectId = projectId;
+      payload.imageBase64 = await fileToBase64(file);
+      payload.contentType = file.type || 'image/jpeg';
+      payload.fileName = file.name || 'mockup.jpg';
+    }
+
+    const res = await fetch('/.netlify/functions/upload-project-image', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.error || `Server upload failed (${res.status})`);
+    }
+    return data;
+  }
+
   async function deleteProjectImageByUrl(url) {
-    if (!init() || !storage) return;
+    if (!url) return;
     const path = storagePathFromUrl(url);
-    if (!path) return;
+
+    if (auth && auth.currentUser && path) {
+      try {
+        await apiUploadImage(null, null, 'DELETE', { path, url });
+        return;
+      } catch (error) {
+        console.warn('Server image delete failed, trying client:', error.message);
+      }
+    }
+
+    if (!init() || !storage || !path) return;
     try {
       await storage.ref(path).delete();
     } catch (error) {
@@ -71,7 +133,6 @@ window.BrainCoreFirebase = (function () {
 
   async function uploadProjectImage(file, projectId) {
     if (!init()) throw new Error('Firebase not configured');
-    if (!storage) throw new Error('Firebase Storage not loaded. Add storage script on admin page.');
     if (!file || !projectId) throw new Error('Image file and project ID are required');
 
     if (file.size > IMAGE_MAX_BYTES) {
@@ -83,14 +144,26 @@ window.BrainCoreFirebase = (function () {
       throw new Error('Please upload an image file (PNG, JPG, or WebP).');
     }
 
-    const rawExt = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const allowed = { jpg: 1, jpeg: 1, png: 1, webp: 1, gif: 1 };
-    const ext = allowed[rawExt] ? rawExt.replace('jpeg', 'jpg') : 'jpg';
-    const path = `${IMAGE_FOLDER}/${projectId}/mockup.${ext}`;
-    const ref = storage.ref(path);
+    try {
+      const data = await apiUploadImage(file, projectId, 'POST');
+      if (data.url) return data.url;
+    } catch (serverError) {
+      if (!storage) throw serverError;
 
-    await ref.put(file, { contentType: type });
-    return ref.getDownloadURL();
+      try {
+        const rawExt = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const allowed = { jpg: 1, jpeg: 1, png: 1, webp: 1, gif: 1 };
+        const ext = allowed[rawExt] ? rawExt.replace('jpeg', 'jpg') : 'jpg';
+        const path = `${IMAGE_FOLDER}/${projectId}/mockup.${ext}`;
+        const ref = storage.ref(path);
+        await ref.put(file, { contentType: type });
+        return ref.getDownloadURL();
+      } catch (clientError) {
+        throw new Error(formatStorageError(clientError) || serverError.message);
+      }
+    }
+
+    throw new Error('Upload failed.');
   }
 
   function projectsRef() {
