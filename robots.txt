@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /form-detect.html
 
-Sitemap: /sitemap.xml
+Sitemap: https://braincoredev.netlify.app/sitemap.xml
