@@ -80,7 +80,11 @@ window.BrainCoreFirebase = (function () {
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error((data.error && data.error.message) || 'Image upload failed. Check CLOUDINARY_CONFIG in config.js.');
+      const msg = (data.error && data.error.message) || 'Image upload failed.';
+      if (msg.includes('whitelisted for unsigned')) {
+        throw new Error(`${msg} → In Cloudinary: Settings → Upload → edit preset "${uploadPreset}" → Signing mode must be Unsigned → Save.`);
+      }
+      throw new Error(msg);
     }
 
     return data.secure_url;
