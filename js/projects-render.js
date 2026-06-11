@@ -16,21 +16,14 @@ window.BrainCoreProjectsUI = (function () {
     return tags[0] || 'Website';
   }
 
-  function screenMarkup(project) {
+  function screenHtml(project) {
     const img = (project.image || '').trim();
     if (img) {
-      const safe = escapeHtml(img);
-      return {
-        className: 'device-screen image-screen',
-        style: `background-image:url("${safe}");`,
-      };
+      return `<div class="device-screen image-screen"><img src="${escapeHtml(img)}" alt="" loading="lazy" decoding="async" /></div>`;
     }
     const c1 = escapeHtml(project.c1 || '#FF6B2B');
     const c2 = escapeHtml(project.c2 || '#1a0a00');
-    return {
-      className: 'device-screen color-screen',
-      style: `--c1:${c1};--c2:${c2};`,
-    };
+    return `<div class="device-screen color-screen" style="--c1:${c1};--c2:${c2};"></div>`;
   }
 
   function renderShowcaseCard(project, index, options) {
@@ -42,7 +35,7 @@ window.BrainCoreProjectsUI = (function () {
     const floatDelay = (index % 6) * 0.55;
     const title = escapeHtml(project.title);
     const category = escapeHtml(projectCategory(project));
-    const screen = screenMarkup(project);
+    const screenEl = screenHtml(project);
     const url = (project.url || '').trim();
     const animAttr = opts.animate !== false ? ` style="--float-delay:${floatDelay}s"` : '';
 
@@ -51,28 +44,28 @@ window.BrainCoreProjectsUI = (function () {
         <div class="mock-stage">
           ${variant === 1 ? `
             <div class="device-laptop mock-float">
-              <div class="device-bezel"><div class="${screen.className}" style="${screen.style}"></div></div>
+              <div class="device-bezel">${screenEl}</div>
               <div class="device-base"></div>
             </div>
             <div class="device-phone mock-float-slow">
-              <div class="${screen.className}" style="${screen.style}"></div>
+              ${screenEl}
             </div>
           ` : variant === 2 ? `
             <div class="device-monitor mock-float">
-              <div class="device-bezel"><div class="${screen.className}" style="${screen.style}"></div></div>
+              <div class="device-bezel">${screenEl}</div>
               <div class="device-stand"></div>
             </div>
             <div class="device-phone mock-float-slow">
-              <div class="${screen.className}" style="${screen.style}"></div>
+              ${screenEl}
             </div>
           ` : `
             <div class="device-pedestal mock-float">
               <div class="pedestal-top"></div>
               <div class="device-laptop compact">
-                <div class="device-bezel"><div class="${screen.className}" style="${screen.style}"></div></div>
+                <div class="device-bezel">${screenEl}</div>
               </div>
               <div class="device-phone front">
-                <div class="${screen.className}" style="${screen.style}"></div>
+                ${screenEl}
               </div>
             </div>
           `}
