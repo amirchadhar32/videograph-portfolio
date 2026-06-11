@@ -30,10 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const slice = allProjects.slice(start, start + pageSize);
 
     window.BrainCoreProjectsUI.renderGrid(slice, grid, {
+      layout: 'showcase',
       delayBase: 0,
       visible: true,
       noReveal: false,
       cardAsLink: true,
+      animate: true,
     });
 
     grid.querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'));

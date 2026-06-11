@@ -5,6 +5,10 @@ window.BrainCoreFirebase = (function () {
   let app = null;
   let auth = null;
   let db = null;
+  let storage = null;
+
+  const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+  const IMAGE_FOLDER = 'project-images';
 
   const DEFAULT_PROJECTS = [
     { title: 'Reguease', description: 'AI-powered regulatory compliance platform with intelligent document processing and real-time compliance tracking.', tags: ['Laravel', 'Vue.js', 'ChatGPT API'], c1: '#FF6B2B', c2: '#1a0a00', url: '', featured: true, published: true, order: 1 },
@@ -28,7 +32,65 @@ window.BrainCoreFirebase = (function () {
     app = firebase.initializeApp(window.FIREBASE_CONFIG);
     auth = firebase.auth();
     db = firebase.firestore();
+    if (typeof firebase.storage === 'function') {
+      storage = firebase.storage();
+    }
     return true;
+  }
+
+  function isHostedProjectImage(url) {
+    if (!url) return false;
+    const bucket = (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.storageBucket) || '';
+    return url.includes('firebasestorage.googleapis.com')
+      || (bucket && url.includes(bucket));
+  }
+
+  function storagePathFromUrl(url) {
+    try {
+      const u = new URL(url);
+      if (!u.hostname.includes('firebasestorage.googleapis.com')) return null;
+      const match = u.pathname.match(/\/o\/(.+)$/);
+      if (!match) return null;
+      const path = decodeURIComponent(match[1]);
+      return path.startsWith(`${IMAGE_FOLDER}/`) ? path : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async function deleteProjectImageByUrl(url) {
+    if (!init() || !storage) return;
+    const path = storagePathFromUrl(url);
+    if (!path) return;
+    try {
+      await storage.ref(path).delete();
+    } catch (error) {
+      console.warn('Old project image delete skipped:', error.message);
+    }
+  }
+
+  async function uploadProjectImage(file, projectId) {
+    if (!init()) throw new Error('Firebase not configured');
+    if (!storage) throw new Error('Firebase Storage not loaded. Add storage script on admin page.');
+    if (!file || !projectId) throw new Error('Image file and project ID are required');
+
+    if (file.size > IMAGE_MAX_BYTES) {
+      throw new Error('Image must be 5 MB or smaller.');
+    }
+
+    const type = String(file.type || '');
+    if (!type.startsWith('image/')) {
+      throw new Error('Please upload an image file (PNG, JPG, or WebP).');
+    }
+
+    const rawExt = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const allowed = { jpg: 1, jpeg: 1, png: 1, webp: 1, gif: 1 };
+    const ext = allowed[rawExt] ? rawExt.replace('jpeg', 'jpg') : 'jpg';
+    const path = `${IMAGE_FOLDER}/${projectId}/mockup.${ext}`;
+    const ref = storage.ref(path);
+
+    await ref.put(file, { contentType: type });
+    return ref.getDownloadURL();
   }
 
   function projectsRef() {
@@ -61,6 +123,8 @@ window.BrainCoreFirebase = (function () {
       title: String(data.title || '').trim(),
       description: String(data.description || '').trim(),
       tags: Array.isArray(data.tags) ? data.tags : [],
+      category: String(data.category || '').trim(),
+      image: String(data.image || '').trim(),
       c1: data.c1 || '#FF6B2B',
       c2: data.c2 || '#1a0a00',
       url: String(data.url || '').trim(),
@@ -82,6 +146,10 @@ window.BrainCoreFirebase = (function () {
 
   async function deleteProject(id) {
     if (!init()) throw new Error('Firebase not configured');
+    const doc = await projectsRef().doc(id).get();
+    if (doc.exists && doc.data().image) {
+      await deleteProjectImageByUrl(doc.data().image);
+    }
     await projectsRef().doc(id).delete();
   }
 
@@ -176,7 +244,7 @@ window.BrainCoreFirebase = (function () {
   }
 
   function permissionHelp() {
-    return 'Firestore permission denied. In Firebase Console → Firestore → Rules, paste firestore.rules from your project and click Publish. Then log in again on admin dashboard.';
+    return 'Permission denied. In Firebase Console publish firestore.rules and storage.rules from your project folder, enable Storage, then log in again.';
   }
 
   return {
@@ -186,6 +254,9 @@ window.BrainCoreFirebase = (function () {
     getAllProjectsAdmin,
     saveProject,
     deleteProject,
+    uploadProjectImage,
+    deleteProjectImageByUrl,
+    isHostedProjectImage,
     seedDefaultProjects,
     autoSeedIfEmpty,
     signIn,

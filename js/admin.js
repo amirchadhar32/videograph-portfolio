@@ -136,6 +136,68 @@
       setActiveNav(panel);
     }
 
+    const c1Picker = document.getElementById('c1Picker');
+    const c2Picker = document.getElementById('c2Picker');
+    const imageHidden = document.getElementById('image');
+    const imageFileInput = document.getElementById('imageFile');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePreviewWrap = document.getElementById('imagePreviewWrap');
+    const imagePreviewLabel = document.getElementById('imagePreviewLabel');
+    let previewObjectUrl = null;
+
+    function revokePreviewObjectUrl() {
+      if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+      }
+    }
+
+    function updateImagePreview() {
+      if (!imagePreview || !imagePreviewWrap) return;
+      revokePreviewObjectUrl();
+
+      const file = imageFileInput && imageFileInput.files && imageFileInput.files[0];
+      const savedUrl = imageHidden ? imageHidden.value.trim() : '';
+
+      if (file) {
+        previewObjectUrl = URL.createObjectURL(file);
+        imagePreview.src = previewObjectUrl;
+        if (imagePreviewLabel) imagePreviewLabel.textContent = 'New upload preview';
+        imagePreviewWrap.classList.remove('hidden');
+        return;
+      }
+
+      if (savedUrl) {
+        imagePreview.src = savedUrl;
+        if (imagePreviewLabel) imagePreviewLabel.textContent = 'Current saved image';
+        imagePreviewWrap.classList.remove('hidden');
+        imagePreview.onerror = () => imagePreviewWrap.classList.add('hidden');
+        return;
+      }
+
+      imagePreviewWrap.classList.add('hidden');
+      imagePreview.removeAttribute('src');
+    }
+
+    if (imageFileInput) {
+      imageFileInput.addEventListener('change', updateImagePreview);
+    }
+
+    function syncColorPickers() {
+      if (!form) return;
+      if (c1Picker && /^#[0-9A-Fa-f]{6}$/.test(form.c1.value)) c1Picker.value = form.c1.value;
+      if (c2Picker && /^#[0-9A-Fa-f]{6}$/.test(form.c2.value)) c2Picker.value = form.c2.value;
+    }
+
+    if (c1Picker && form) {
+      c1Picker.addEventListener('input', () => { form.c1.value = c1Picker.value; });
+      form.c1.addEventListener('input', syncColorPickers);
+    }
+    if (c2Picker && form) {
+      c2Picker.addEventListener('input', () => { form.c2.value = c2Picker.value; });
+      form.c2.addEventListener('input', syncColorPickers);
+    }
+
     function resetForm() {
       editingId = null;
       if (form) {
@@ -144,6 +206,10 @@
         form.c1.value = '#FF6B2B';
         form.c2.value = '#1a0a00';
         form.order.value = '0';
+        if (imageHidden) imageHidden.value = '';
+        if (imageFileInput) imageFileInput.value = '';
+        syncColorPickers();
+        updateImagePreview();
       }
       const titleEl = document.getElementById('projectFormTitle');
       if (titleEl) titleEl.textContent = 'Create Project';
@@ -252,19 +318,40 @@
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const tags = form.tags.value.split(',').map((t) => t.trim()).filter(Boolean);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const file = imageFileInput && imageFileInput.files && imageFileInput.files[0];
+        let imageUrl = imageHidden ? imageHidden.value.trim() : '';
+        let projectId = editingId;
+
+        const payload = {
+          title: form.title.value,
+          description: form.description.value,
+          tags,
+          category: form.category.value,
+          c1: form.c1.value,
+          c2: form.c2.value,
+          url: form.url.value,
+          order: form.order.value,
+          featured: form.featured.checked,
+          published: form.published.checked,
+        };
 
         try {
-          await fb.saveProject({
-            title: form.title.value,
-            description: form.description.value,
-            tags,
-            c1: form.c1.value,
-            c2: form.c2.value,
-            url: form.url.value,
-            order: form.order.value,
-            featured: form.featured.checked,
-            published: form.published.checked,
-          }, editingId);
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = file ? 'Uploading...' : 'Saving...';
+          }
+
+          if (file) {
+            if (!projectId) {
+              projectId = await fb.saveProject({ ...payload, image: '' }, null);
+            } else if (imageUrl && fb.isHostedProjectImage(imageUrl)) {
+              await fb.deleteProjectImageByUrl(imageUrl);
+            }
+            imageUrl = await fb.uploadProjectImage(file, projectId);
+          }
+
+          await fb.saveProject({ ...payload, image: imageUrl }, projectId);
 
           showStatus(editingId ? 'Project updated.' : 'Project added.', 'success');
           closeProjectModal();
@@ -272,6 +359,11 @@
           await loadProjects();
         } catch (error) {
           showStatus(error.message, 'error');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+          }
         }
       });
     }
@@ -329,6 +421,8 @@
                 title: project.title,
                 description: project.description,
                 tags: project.tags || [],
+                category: project.category,
+                image: project.image,
                 c1: project.c1,
                 c2: project.c2,
                 url: project.url,
@@ -374,8 +468,13 @@
       form.title.value = project.title || '';
       form.description.value = project.description || '';
       form.tags.value = (project.tags || []).join(', ');
+      form.category.value = project.category || '';
+      if (imageHidden) imageHidden.value = project.image || '';
+      if (imageFileInput) imageFileInput.value = '';
       form.c1.value = project.c1 || '#FF6B2B';
       form.c2.value = project.c2 || '#1a0a00';
+      syncColorPickers();
+      updateImagePreview();
       form.url.value = project.url || '';
       form.order.value = project.order || 0;
       form.featured.checked = Boolean(project.featured);

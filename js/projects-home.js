@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const all = await window.BrainCoreFirebase.getPublishedProjects();
     const projects = all.slice(0, limit);
-    window.BrainCoreProjectsUI.renderGrid(projects, grid, { delayBase: 0 });
+    window.BrainCoreProjectsUI.renderGrid(projects, grid, { layout: 'showcase', delayBase: 0, animate: true });
 
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.BrainCoreProjectsUI.renderGrid(
       window.BrainCoreFirebase.DEFAULT_PROJECTS.slice(0, limit),
       grid,
-      { delayBase: 0 }
+      { layout: 'showcase', delayBase: 0, animate: true }
     );
   }
 });
