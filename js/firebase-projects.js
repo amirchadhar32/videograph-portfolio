@@ -5,10 +5,8 @@ window.BrainCoreFirebase = (function () {
   let app = null;
   let auth = null;
   let db = null;
-  let storage = null;
 
   const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
-  const IMAGE_FOLDER = 'project-images';
 
   const DEFAULT_PROJECTS = [
     { title: 'Reguease', description: 'AI-powered regulatory compliance platform with intelligent document processing and real-time compliance tracking.', tags: ['Laravel', 'Vue.js', 'ChatGPT API'], c1: '#FF6B2B', c2: '#1a0a00', url: '', featured: true, published: true, order: 1 },
@@ -32,108 +30,33 @@ window.BrainCoreFirebase = (function () {
     app = firebase.initializeApp(window.FIREBASE_CONFIG);
     auth = firebase.auth();
     db = firebase.firestore();
-    if (typeof firebase.storage === 'function') {
-      storage = firebase.storage();
-    }
     return true;
+  }
+
+  function cloudinaryConfig() {
+    return window.CLOUDINARY_CONFIG || {};
   }
 
   function isHostedProjectImage(url) {
     if (!url) return false;
-    const bucket = (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.storageBucket) || '';
-    return url.includes('firebasestorage.googleapis.com')
-      || (bucket && url.includes(bucket));
+    return url.includes('res.cloudinary.com');
   }
 
-  function storagePathFromUrl(url) {
-    try {
-      const u = new URL(url);
-      if (!u.hostname.includes('firebasestorage.googleapis.com')) return null;
-      const match = u.pathname.match(/\/o\/(.+)$/);
-      if (!match) return null;
-      const path = decodeURIComponent(match[1]);
-      return path.startsWith(`${IMAGE_FOLDER}/`) ? path : null;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = String(reader.result || '');
-        const base64 = result.includes(',') ? result.split(',')[1] : result;
-        resolve(base64);
-      };
-      reader.onerror = () => reject(new Error('Could not read image file.'));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function formatStorageError(error) {
-    const code = error && error.code ? error.code : '';
-    const msg = (error && error.message) || 'Upload failed';
-    if (msg.includes('CORS') || code === 'storage/unauthorized') {
-      return 'Image upload blocked. Enable Firebase Storage, publish storage.rules, add braincoredev.netlify.app to Firebase Auth → Authorized domains, and set FIREBASE_SERVICE_ACCOUNT on Netlify (see admin notes).';
-    }
-    return msg;
-  }
-
-  async function apiUploadImage(file, projectId, method, extra) {
-    if (!auth || !auth.currentUser) {
-      throw new Error('Please log in again before uploading images.');
-    }
-    const idToken = await auth.currentUser.getIdToken(true);
-    const payload = extra || {};
-
-    if (method === 'POST') {
-      payload.projectId = projectId;
-      payload.imageBase64 = await fileToBase64(file);
-      payload.contentType = file.type || 'image/jpeg';
-      payload.fileName = file.name || 'mockup.jpg';
-    }
-
-    const res = await fetch('/.netlify/functions/upload-project-image', {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${idToken}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(data.error || `Server upload failed (${res.status})`);
-    }
-    return data;
-  }
-
-  async function deleteProjectImageByUrl(url) {
-    if (!url) return;
-    const path = storagePathFromUrl(url);
-
-    if (auth && auth.currentUser && path) {
-      try {
-        await apiUploadImage(null, null, 'DELETE', { path, url });
-        return;
-      } catch (error) {
-        console.warn('Server image delete failed, trying client:', error.message);
-      }
-    }
-
-    if (!init() || !storage || !path) return;
-    try {
-      await storage.ref(path).delete();
-    } catch (error) {
-      console.warn('Old project image delete skipped:', error.message);
-    }
+  async function deleteProjectImageByUrl() {
+    /* Cloudinary free unsigned uploads: re-upload same public_id overwrites old file */
   }
 
   async function uploadProjectImage(file, projectId) {
-    if (!init()) throw new Error('Firebase not configured');
     if (!file || !projectId) throw new Error('Image file and project ID are required');
+
+    const cfg = cloudinaryConfig();
+    const cloudName = String(cfg.cloudName || '').trim();
+    const uploadPreset = String(cfg.uploadPreset || '').trim();
+    const folder = String(cfg.folder || 'braincore-projects').trim();
+
+    if (!cloudName || !uploadPreset) {
+      throw new Error('Set CLOUDINARY_CONFIG in config.js (free Cloudinary account — no Firebase Storage needed).');
+    }
 
     if (file.size > IMAGE_MAX_BYTES) {
       throw new Error('Image must be 5 MB or smaller.');
@@ -144,26 +67,23 @@ window.BrainCoreFirebase = (function () {
       throw new Error('Please upload an image file (PNG, JPG, or WebP).');
     }
 
-    try {
-      const data = await apiUploadImage(file, projectId, 'POST');
-      if (data.url) return data.url;
-    } catch (serverError) {
-      if (!storage) throw serverError;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+    formData.append('folder', folder);
+    formData.append('public_id', projectId);
 
-      try {
-        const rawExt = (file.name.split('.').pop() || 'jpg').toLowerCase();
-        const allowed = { jpg: 1, jpeg: 1, png: 1, webp: 1, gif: 1 };
-        const ext = allowed[rawExt] ? rawExt.replace('jpeg', 'jpg') : 'jpg';
-        const path = `${IMAGE_FOLDER}/${projectId}/mockup.${ext}`;
-        const ref = storage.ref(path);
-        await ref.put(file, { contentType: type });
-        return ref.getDownloadURL();
-      } catch (clientError) {
-        throw new Error(formatStorageError(clientError) || serverError.message);
-      }
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error((data.error && data.error.message) || 'Image upload failed. Check CLOUDINARY_CONFIG in config.js.');
     }
 
-    throw new Error('Upload failed.');
+    return data.secure_url;
   }
 
   function projectsRef() {
@@ -317,7 +237,7 @@ window.BrainCoreFirebase = (function () {
   }
 
   function permissionHelp() {
-    return 'Permission denied. In Firebase Console publish firestore.rules and storage.rules from your project folder, enable Storage, then log in again.';
+    return 'Firestore permission denied. In Firebase Console publish firestore.rules from your project folder, then log in again.';
   }
 
   return {

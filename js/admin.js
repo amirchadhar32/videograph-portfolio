@@ -345,8 +345,6 @@
           if (file) {
             if (!projectId) {
               projectId = await fb.saveProject({ ...payload, image: '' }, null);
-            } else if (imageUrl && fb.isHostedProjectImage(imageUrl)) {
-              await fb.deleteProjectImageByUrl(imageUrl);
             }
             imageUrl = await fb.uploadProjectImage(file, projectId);
           }

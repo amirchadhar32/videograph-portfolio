@@ -48,6 +48,17 @@ window.TAWK_OFFSET_X = 20;
 window.TAWK_OFFSET_Y = 20;
 window.TAWK_HIDE_ATTENTION_GRABBER = true;
 
+/* ---- Cloudinary (FREE image upload — no Firebase Storage / Blaze plan) ---- */
+// 1. Free account: https://cloudinary.com/users/register_free
+// 2. Dashboard → Settings → Upload → Add upload preset
+// 3. Signing mode: Unsigned → Save
+// 4. Copy Cloud name (Dashboard home) + preset name below
+window.CLOUDINARY_CONFIG = {
+  cloudName: '', // e.g. 'dxyzabc123'
+  uploadPreset: '', // e.g. 'braincore_unsigned'
+  folder: 'braincore-projects',
+};
+
 /* ---- Projects ---- */
 window.PROJECTS_HOME_LIMIT = 6;
 window.PROJECTS_PAGE_SIZE = 9;
